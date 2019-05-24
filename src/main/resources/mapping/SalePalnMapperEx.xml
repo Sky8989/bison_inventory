@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace可以写类的全限定名，这样做的好处是
+　　sqlSession.insert(Student.class.getName()+".addStudent");
+-->
+<mapper namespace="com.leaderment.mapper.mybatis.SalePlanMapperEx">
+
+
+    <select id="findAll" resultType="com.leaderment.pojo.SalePlan">
+        SELECT
+            sale_plan_id as salePlanId,
+            user_id		as userId,
+            plan_date	as planDate,
+            status
+        FROM
+            bison_amz_product_inventory.sale_plan
+    </select>
+
+    <select id="findItemTableHead" resultType="com.leaderment.pojo.ItemKey">
+        select
+            ik.itme_key_id as itmeKeyId,
+            itme_key  as itmeKey
+        from
+            bison.itme_key ik,
+            bison.user u
+        where
+            ik.business_unit_id = u.business_unit_id
+        group by
+            ik.itme_key_id
+    </select>
+
+
+    <select id="isExistSalePalnItem"  resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            bison_amz_product_inventory.sale_plan_item  spi,
+            bison_amz_product_inventory.sale_plan sp
+        where
+            spi.sale_plan_id = sp.sale_plan_id
+            and sp.sale_plan_id = #{salePlanId}
+    </select>
+
+
+
+    <select id="getlastUnitsOrderedSum" resultType="java.lang.Integer">
+        SELECT
+            sum(units_ordered)
+        FROM
+            bison_reports.amz_report_conversion_rate
+        where
+        asin_id = #{asinId}
+        and country_id = #{countryId}
+        <if test="lastDayVal != 0">
+            and DATE_SUB(CURDATE(), INTERVAL #{lastDayVal} DAY) <![CDATA[<=]]>  date(record_date)
+        </if>
+
+        group by asin_id;
+    </select>
+
+    <select id="isExistSalePaln" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            bison_amz_product_inventory.sale_plan
+        WHERE
+        user_id  = #{userId}
+        AND plan_date like  concat('',#{time},'%')
+    </select>
+
+    <select id="findUserListByBusinessUnitIdAndStatus" resultType="com.leaderment.pojo.User">
+
+     SELECT
+        u.user_id as userId,
+        u.user_name as userName
+    FROM
+        bison_amz_product_inventory.sale_plan sp,
+        bison.user u
+    where
+        sp.user_id = u.user_id
+        and u.business_unit_id = #{businessUnitId}
+        and sp.status = #{status}
+        group by u.user_id
+    </select>
+
+    <select id="findCountryIdByCountryName" resultType="java.lang.Integer">
+        SELECT country_id from bison.country where country_name = #{countryName}
+    </select>
+
+    <select id="findProductIdByModelNumber" resultType="java.lang.Integer">
+      SELECT product_id from bison.product where product_model_number = #{productModelNumber}
+    </select>
+
+    <select id="findByUserId" resultType="com.leaderment.pojo.SalePlan">
+         SELECT
+            sale_plan_id as salePlanId,
+            user_id		as userId,
+            plan_date	as planDate,
+            status
+        FROM
+            bison_amz_product_inventory.sale_plan
+        where
+            user_id = #{userId}
+
+    </select>
+
+    <insert id="save" keyProperty="salePlanId" useGeneratedKeys="true" parameterType="com.leaderment.pojo.SalePlan">
+        insert into bison_amz_product_inventory.sale_plan
+        (user_id,plan_date,status)
+        values (#{userId},#{planDate},#{status})
+    </insert>
+
+    <select id="findBySalePlanItemId"  resultType="com.leaderment.pojo.SalePlan">
+    SELECT
+        sale_plan_id as salePlanId,
+        user_id		as userId,
+        plan_date	as planDate,
+        status
+    FROM
+        bison_amz_product_inventory.sale_plan
+    where
+        sale_plan_id = #{salePlanId}
+ </select>
+
+
+
+</mapper>

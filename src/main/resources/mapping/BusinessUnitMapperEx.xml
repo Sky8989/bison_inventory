@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace可以写类的全限定名，这样做的好处是
+　　sqlSession.insert(Student.class.getName()+".addStudent");
+-->
+<mapper namespace="com.leaderment.mapper.mybatis.BusinessUnitMapperEx">
+
+
+
+    <select id="findBusinessUnitByUserId" resultType="com.leaderment.pojo.BusinessUnit" >
+        SELECT
+            bu.business_unit_id as businessUnitId,
+            bu.business_unit as businessUnit
+        FROM
+            bison.business_unit as bu,
+            bison.business_unit_user_rel as bu_rel
+        where
+            bu.business_unit_id  = bu_rel.business_unit_id
+            and bu_rel.user_id  = #{userId}
+    </select>
+
+
+
+</mapper>

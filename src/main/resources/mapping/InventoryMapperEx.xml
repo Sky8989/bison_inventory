@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace可以写类的全限定名，这样做的好处是
+　　sqlSession.insert(Student.class.getName()+".addStudent");
+-->
+<mapper namespace="com.leaderment.mapper.mybatis.InventoryMapperEx">
+    
+    <select id="findStorageNumByProductId" resultType="java.lang.Integer">
+    SELECT
+        sum(FLOOR(r1.i_quantity) + FLOOR(r8.i_quantity))
+    FROM
+        U8.rdrecords01 r1,
+        U8.rdrecords08 r8,
+        bison.product p
+    where
+        r1.c_inv_code = p.product_u8_code
+        and p.product_u8_code  = r8.c_inv_code
+        and p.product_id = #{productId}
+        group by p.product_id
+    </select>
+
+    <select id="findStorageNumOutByProductId" resultType="java.lang.Integer">
+    SELECT
+        sum(FLOOR(r9.i_quantity)) as storageNumber9
+    FROM
+        U8.rdrecords01 r9,
+        bison.product p
+    where
+        r9.c_inv_code = p.product_u8_code
+        and p.product_id = #{productId}
+        group by p.product_id
+
+    </select>
+
+    <select id="findAfnFulfillableQuantityByAsinId" resultType="java.lang.Integer">
+        SELECT
+            sum(afn_fulfillable_quantity)
+        FROM
+            bison_amz_product_inventory.amz_inventory
+        where
+            asin_id = #{asinId};
+    </select>
+
+    <select id="findShippedNumberByAsinId" resultType="java.lang.Integer">
+        SELECT
+            sum(item.quantity_shipped - item.quantity_received) as shipped
+        FROM
+            bison_amz_product_inventory.amz_shipment aship,
+            bison_amz_product_inventory.amz_shipment_item  item,
+            bison_amz_product_inventory.amz_seller_sku sku
+
+        where
+            aship.shipment_id = item.shipment_id
+            and item.seller_sku = sku.sku
+            and (aship.status_id = 2 or aship.status_id = 6)
+            and sku.asin_id = #{asinid}
+        group by sku.asin_id
+    </select>
+
+    <select id="findSupplierStorageNumByProductId" resultType="java.lang.Integer">
+        SELECT
+            sum(floor(r8.i_quantity+r1.i_quantity))
+        FROM
+            U8.supplier s,
+            U8.rdrecords08 r8,
+            U8.rdrecords08 r1,
+            U8.ven_and_inv vai,
+            bison.product p
+        where
+             p.product_u8_code = vai.c_inv_code
+             and vai.c_ven_code = s.c_ven_code
+             and r8.c_inv_code = p.product_u8_code
+             and r1.c_inv_code = p.product_u8_code
+             and p.product_id = #{productId}
+
+        group by p.product_id
+    </select>
+
+    <select id="findSupplierStorageNumOutByProductId" resultType="java.lang.Integer">
+        SELECT
+            sum(floor(r9.i_quantity))
+        FROM
+            U8.supplier s,
+            U8.rdrecords09 r9,
+            U8.ven_and_inv vai,
+            bison.product p
+        where
+         r9.c_inv_code = vai.c_inv_code
+         and vai.c_ven_code = s.c_ven_code
+         and r9.c_inv_code = p.product_u8_code
+         and p.product_id = #{productId}
+         group by p.product_id
+    </select>
+
+
+    <!--按产品类型汇总-->
+    <select id="findModelNumberInventoryList" parameterType="com.leaderment.pojo.dto.InventoryDTO"  resultType="com.leaderment.pojo.vo.InventoryVO">
+        select
+            p.product_id					as productId,
+            p.product_model_number			as productModelNumber,
+            p.total_safety_day				as totalSafetyDay,
+            p.amz_safety_day				as amzSafetyDay,
+            p.est_units_avg_day_ratio		as estUnitsAvgDayRatio,
+            p.last_units_avg_day_ratio   	as lastUnitsAvgDayRatio,
+            p.big_last_units_avg_day 		as bigLastUnitsAvgDay,
+            p.big_est_unitis_avg_day_ratio  as bigEstUnitisAvgDayRatio,
+            p.big_item_key_id				as bigItemKeyId,
+            p.samll_last_units_avg_day		as samllLastUnitsAvgDay,
+            p.samll_est_units_avg_day_ratio as samllEstUnitsAvgDayRatio,
+            p.samll_item_key_id				as samllItemKeyId,
+            pc.product_category				as productCategory,
+            t1.sale_plan_item_id			as salePlanItemId,
+            t1.est_units_promotion			as estUnitsPromotion,
+            t1.status
+        from
+            bison.product p left join
+            bison.product_category pc
+            on p.product_category_id = pc.product_category_id
+        left join (
+                    select sp_item.sale_plan_item_id,
+                           sp_item.product_id,
+                           sp_item.est_units_promotion,
+                           sp_item.status
+                    from
+                           bison_amz_product_inventory.sale_plan_item sp_item
+                    left join
+                            bison_amz_product_inventory.sale_plan sp
+                    on
+                            sp_item.sale_plan_id = sp.sale_plan_id
+                    where
+                            plan_date like  concat('',#{localMonth},'%')
+                ) t1 on p.product_id = t1.product_id
+            where 1 = 1
+            <if test="businessUnitId != 0">
+                and p.business_unit_id = #{businessUnitId}
+            </if>
+            <if test="productCategoryId != 0">
+                and p.product_category_id = #{productCategoryId}
+            </if>
+            <if test="productId != 0">
+                and p.product_id = #{productId}
+            </if>
+
+
+
+    </select>
+
+
+
+
+
+</mapper>

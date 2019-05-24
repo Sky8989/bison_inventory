@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace可以写类的全限定名，这样做的好处是
+　　sqlSession.insert(Student.class.getName()+".addStudent");
+-->
+<mapper namespace="com.leaderment.mapper.mybatis.SalesVolumeRuleMapperEx">
+
+
+    <select id="findByItemKeyId" resultType="com.leaderment.pojo.SalesVolumeRule">
+        SELECT
+            svr.sales_volume_rule_id	as salesVolumeRuleId,
+            t1.item_key_id	as itemKeyId,
+            t1.item_key_ratio as itemKeyRatio,
+            svr.min_sales_volume as minSalesVolume,
+            svr.max_sales_volume as maxSalesVolume
+        FROM
+            bison_amz_product_inventory.sales_volume_rule svr,
+            (select
+            sales_volume_rule_id,
+            item_key_id,
+            item_key_ratio
+            from
+            bison_amz_product_inventory.sales_volume_rule_item_key_rel
+            where item_key_id = #{itemKeyId})  t1
+        where
+            svr.sales_volume_rule_id in (t1.sales_volume_rule_id)
+    </select>
+
+    <select id="findByItemKeyIdAndSales"  resultType="com.leaderment.pojo.SalesVolumeRule">
+        SELECT
+            sales_volume_rule_id	as salesVolumeRuleId,
+            item_key_id	        as itemKeyId,
+            rationality
+        FROM
+            bison_amz_product_inventory.sales_volume_rule
+        where
+            item_key_id = #{itemKeyId}
+
+        <if test="lastUnitsOrderSum == 0">
+            and (min_sales_volume <![CDATA[<=]]>  #{lastUnitsOrderSum}  )
+        </if>
+
+        <if test="lastUnitsOrderSum != 0">
+            and (min_sales_volume <![CDATA[<]]>  #{lastUnitsOrderSum} and #{lastUnitsOrderSum}  <![CDATA[<=]]> max_sales_volume )
+        </if>
+
+    </select>
+
+
+    <select id="findBySales" resultType="com.leaderment.pojo.SalesVolumeRule">
+
+        SELECT
+        sales_volume_rule_id	as salesVolumeRuleId,
+        item_key_id	        as itemKeyId,
+        rationality
+        FROM
+        bison_amz_product_inventory.sales_volume_rule
+        where
+         1 = 1
+
+        <if test="lastUnitsOrderSum == 0">
+            and (min_sales_volume <![CDATA[<=]]>  #{lastUnitsOrderSum}  )
+        </if>
+
+        <if test="lastUnitsOrderSum != 0">
+            and (min_sales_volume <![CDATA[<]]>  #{lastUnitsOrderSum} and #{lastUnitsOrderSum}  <![CDATA[<=]]> max_sales_volume )
+        </if>
+
+    </select>
+
+
+
+
+
+
+    <select id="findSalesVolumeRuleByItemKeyId" resultType="com.leaderment.pojo.SalesVolumeRule">
+        SELECT
+            svr.sales_volume_rule_id	as salesVolumeRuleId,
+            svr.item_key_id	            as itemKeyId,
+            svr.min_sales_volume		as minSalesVolume,
+            svr.max_sales_volume		as maxSalesVolume,
+            svr.rationality
+        FROM
+            bison_amz_product_inventory.sales_volume_rule svr
+        where
+            svr.item_key_id = #{itemKeyId}
+
+    </select>
+
+
+
+
+    <select id="findBySalesVolumeRuleId" resultType="com.leaderment.pojo.SalesVolumeRule">
+
+        SELECT
+            svr.sales_volume_rule_id	as salesVolumeRuleId,
+            svr.item_key_id	            as itemKeyId,
+            svr.min_sales_volume		as minSalesVolume,
+            svr.max_sales_volume		as maxSalesVolume,
+            svr.rationality
+        FROM
+            bison_amz_product_inventory.sales_volume_rule svr
+        where
+            svr.sales_volume_rule_id = #{salesVolumeRuleId}
+    </select>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace可以写类的全限定名，这样做的好处是
+　　sqlSession.insert(Student.class.getName()+".addStudent");
+-->
+<mapper namespace="com.leaderment.mapper.mybatis.ItemKeyMapperEx">
+
+
+
+    <select id="getByItemKeyAndTypeAndBusinessUnitId" resultType="java.lang.Integer" parameterType="com.leaderment.pojo.ItemKey">
+        SELECT
+            COUNT(1)
+        FROM
+            bison_amz_product_inventory.item_key
+        WHERE
+            item_key = #{itemKey}
+            AND type = #{type}
+            AND business_unit_id = #{businessUnitId}
+
+    </select>
+
+    <select id="findByBusinessUnitId" resultType="com.leaderment.pojo.ItemKey" >
+        SELECT
+            item_key_id		    as itemKeyId,
+            item_key		    as itemKey,
+            business_unit_id    as businessUnitId,
+            type,
+            status,
+            last_day_val        as lastDayVal
+        FROM
+            bison_amz_product_inventory.item_key
+        WHERE
+            business_unit_id = #{businessUnitId}
+    </select>
+
+
+
+
+
+    <select id="findByUserIdAndType" resultType="com.leaderment.pojo.ItemKey">
+         SELECT
+                ik.item_key_id 	as itemKeyId,
+                ik.item_key			as itemKey,
+                ik.type,
+                ik.`status`
+            FROM
+                bison_amz_product_inventory.item_key ik,
+                bison.user u
+            where
+                 ik.business_unit_id = u.business_unit_id
+                and ik.type = #{type}
+                and u.user_id = #{userId}
+                and ik.status = #{status}
+
+    </select>
+
+    <select id="findByBusinessUnitIdAndStatus" resultType="com.leaderment.pojo.ItemKey">
+         SELECT
+            ik.item_key_id 	as itemKeyId,
+            ik.item_key			as itemKey,
+            ik.type,
+            ik.`status`,
+            last_day_val as lastDayVal,
+            business_unit_id    as businessUnitId
+        FROM
+            bison_amz_product_inventory.item_key ik
+        WHERE
+            ik.status = #{status}
+            AND ik.business_unit_id = #{businessUnitId}
+
+    </select>
+
+
+    <select id="findByItemKeyId" resultType="com.leaderment.pojo.ItemKey">
+        SELECT
+            item_key_id 	as itemKeyId,
+            item_key	    as itemKey,
+            business_unit_id    as businessUnitId,
+            type,
+            `status`,
+            last_day_val as lastDayVal
+        FROM
+            bison_amz_product_inventory.item_key
+        WHERE
+            item_key_id = #{itemKeyId}
+
+    </select>
+
+</mapper>

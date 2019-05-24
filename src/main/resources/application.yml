@@ -1,0 +1,62 @@
+server:
+  port: 10023
+spring:
+  application:
+    name: sales-plan #指定服务名
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/bison?useSSL=false&zeroDateTimeBehavior=convertToNull&characterEncoding=utf8
+   # url: jdbc:mysql://lmdevnts0001.leaderment.com:3306/bison?useSSL=false&zeroDateTimeBehavior=convertToNull&characterEncoding=utf8
+  #  username: root
+    username: admin
+   # password: Ldm_1910%
+    password: root
+  jpa:
+    database: MySQL
+    show-sql: true
+  http:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+      enabled: true
+    encoding:
+      charset: UTF-8
+  mvc:
+    static-path-pattern: /static/**
+  resources:
+    static-locations: classpath:/static/
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.1.220:10020/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id:  sales-plan
+    appname: ${spring.application.name}
+
+mybatis:
+  type-aliases-package: com.leaderment.product.pojo.mybatis_pojo
+  mapper-locations: classpath:mapping/*.xml
+  configuration:  #显示SQL
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+my:
+  ip:  http://192.168.1.68:10022
+  route:
+    #hardDisk:  D:/JDOSS
+    #hardDisk: /static
+    imageFolder: IMAGE
+    documentFolder: DOCUMENT
+    videoFolder: VIDEO
+    musicFolder: MUSIC
+    imageType: [".bmp", ".jpg", ".jpeg", ".png", ".tiff", ".gif", ".pcx", ".tga", ".exif", ".fpx", ".svg", ".psd",".cdr", ".pcd", ".dxf", ".ufo", ".eps", ".ai", ".raw", ".wmf"]
+    documentType: [".txt", ".doc", ".docx", ".xls", ".htm", ".html", ".jsp", ".rtf", ".wpd", ".pdf", ".ppt",".js",".md"]
+    videoType: [".mp4", ".avi", ".mov", ".wmv", ".asf", ".navi", ".3gp", ".mkv", ".f4v", ".rmvb", ".webm"]
+    musicType: [".mp3", ".wma", ".wav", ".mod", ".ra", ".cd", ".asf", ".aac", ".vqf", ".ape", ".mid", ".ogg",".m4a", ".vqf"]
+    #IPs: ["0:0:0:0:0:0:0:1","192.168.1.19"]
+
+file:
+  staticAccessPath: /**
+  uploadFolder: /media/peter/Elements/zhangshuai/workspace/product/target/static
