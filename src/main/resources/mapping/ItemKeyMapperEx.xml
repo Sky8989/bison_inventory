@@ -87,4 +87,50 @@
 
     </select>
 
+    <select id="findByProductIdAndType" resultType="com.leaderment.pojo.ItemKey">
+     SELECT
+            ik.item_key_id 	as itemKeyId,
+           ik.item_key	    as itemKey,
+            ik.type,
+            ik.`status`,
+            ik.last_day_val as lastDayVal
+
+        FROM
+            bison_amz_product_inventory.item_key ik
+        where
+         ik.business_unit_id = (select business_unit_id from  bison.product where  product_id = #{productId} limit 1)
+            and ik.type = #{type}
+    </select>
+
+    <select id="findByProductIdAndStatus" resultType="com.leaderment.pojo.ItemKey">
+        SELECT
+            item_key_id 	as itemKeyId,
+            item_key	    as itemKey,
+            business_unit_id    as businessUnitId,
+            type,
+            `status`,
+            last_day_val as lastDayVal
+        FROM
+            bison_amz_product_inventory.item_key
+        WHERE
+            business_unit_id = (select business_unit_id from  bison.product where  product_id = #{productId} limit 1)
+            AND status = #{status}
+    </select>
+
+    <select id="findEstItemKeyListByUserId" resultType="com.leaderment.pojo.ItemKey">
+    SELECT
+        item_key_id 	as itemKeyId,
+        item_key	    as itemKey,
+        business_unit_id    as businessUnitId,
+        type,
+        `status`,
+        last_day_val as lastDayVal
+    FROM
+        bison_amz_product_inventory.item_key
+    where
+    business_unit_id = (SELECT business_unit_id FROM bison.user where user_id = #{userId})
+    and type = #{type}
+
+    </select>
+
 </mapper>

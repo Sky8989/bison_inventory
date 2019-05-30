@@ -56,7 +56,7 @@
             and DATE_SUB(CURDATE(), INTERVAL #{lastDayVal} DAY) <![CDATA[<=]]>  date(record_date)
         </if>
 
-        group by asin_id;
+        group by asin_id
     </select>
 
     <select id="isExistSalePaln" resultType="java.lang.Integer">
@@ -124,5 +124,51 @@
  </select>
 
 
+    <select id="findProductLastUnitsOrderSum" resultType="java.lang.Integer">
+        SELECT
+        sum(units_ordered)
+        FROM
+        bison_reports.amz_report_conversion_rate
+        where
+            1 = 1
+
+         <if test="asinIdList != null and asinIdList.size() > 0">
+             and asin_id in
+             <foreach collection="asinIdList" item="asinId" open="(" close=")" separator=",">
+                #{asinId}
+             </foreach>
+         </if>
+
+        <!--<if test="countryIdList != null and countryIdList.size() > 0">
+            and country_id in
+            <foreach collection="countryIdList" item="countryId" open="(" close=")" separator=",">
+                #{countryId}
+            </foreach>
+        </if>-->
+        <if test="lastDayVal != 0">
+            and DATE_SUB(CURDATE(), INTERVAL #{lastDayVal} DAY) <![CDATA[<=]]>  date(record_date)
+        </if>
+    </select>
+
+
+    <select id="findItemValBySalePlanItemId" resultType="com.leaderment.pojo.vo.ItemValVO">
+        SELECT
+            ik.item_key_id              as itemKeyId,
+            ik.item_key                 as itemKey,
+            iv.item_val_id              as itemValId,
+            iv.item_val                 as itemVal,
+            ik.type,
+            ik.status,
+            ik.last_day_val             as lastDayVal
+
+        FROM
+            bison_amz_product_inventory.sale_plan_item spi,
+            bison_amz_product_inventory.item_key ik,
+            bison_amz_product_inventory.item_val iv
+        WHERE
+            spi.sale_plan_item_id = iv.sale_plan_item_id
+            AND iv.item_key_id = ik.item_key_id
+            AND spi.sale_plan_item_id = #{salePlanItemId}
+    </select>
 
 </mapper>

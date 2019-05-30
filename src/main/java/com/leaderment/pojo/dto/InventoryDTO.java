@@ -1,14 +1,10 @@
 package com.leaderment.pojo.dto;
 
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * 库存查询条件 DTO
  */
 public class InventoryDTO {
-
 
     private int businessUnitId;
 
@@ -18,7 +14,8 @@ public class InventoryDTO {
 
     private int countryId;
 
-    private int sellerId;
+    //账号
+    private int brandId;
 
     private int sellerSkuId;
 
@@ -59,12 +56,12 @@ public class InventoryDTO {
         this.countryId = countryId;
     }
 
-    public int getSellerId() {
-        return sellerId;
+    public int getBrandId() {
+        return brandId;
     }
 
-    public void setSellerId(int sellerId) {
-        this.sellerId = sellerId;
+    public void setBrandId(int brandId) {
+        this.brandId = brandId;
     }
 
     public int getSellerSkuId() {
@@ -90,7 +87,7 @@ public class InventoryDTO {
                 ", productCategoryId=" + productCategoryId +
                 ", productId=" + productId +
                 ", countryId=" + countryId +
-                ", sellerId=" + sellerId +
+                ", brandId=" + brandId +
                 ", sellerSkuId=" + sellerSkuId +
                 ", localMonth='" + localMonth + '\'' +
                 '}';

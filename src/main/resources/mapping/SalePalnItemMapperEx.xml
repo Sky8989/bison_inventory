@@ -32,6 +32,68 @@
 
 
 
+    <select id="findSalePlanItemByProductId" resultType="com.leaderment.pojo.vo.SalePlanItemVO">
+         select
+           sp_item.sale_plan_item_id as salePlanItemId,
+           sp_item.country           as countryId,
+           sp_item.product_id        as productId,
+           sp_item.user_id           as userId,
+           sp_item.status,
+           est_units_promotion       as estUnitsPromotion
+        from
+           bison_amz_product_inventory.sale_plan_item sp_item
+           left join
+                  bison_amz_product_inventory.sale_plan sp
+           on
+             sp_item.sale_plan_id = sp.sale_plan_id
+        where
+          sp_item.product_id = #{productId}
+          <if test="countryId != 0">
+              sp_item.country = #{countryId}
+          </if>
+          and sp.plan_date like concat('',#{localMonth},'%')
+
+    </select>
+
+    <select id="findAsinIdByProductIdAndCountryIdByUserId" resultType="java.lang.Integer">
+        SELECT
+            asin_id
+        FROM
+            bison_amz_product_inventory.user_product_amz_asin_rel
+        where
+            user_charge_id = #{userId}
+            and country_id = #{countryId}
+            and product_id = #{productId}
+        group by
+            asin_id
+    </select>
+
+    <select id="findLastMonthSalePlanItemVO" resultType="com.leaderment.pojo.vo.SalePlanItemVO">
+        select
+           sp_item.sale_plan_item_id as salePlanItemId,
+           sp_item.country           as countryId,
+           sp_item.product_id        as productId,
+           sp_item.user_id           as userId,
+           est_units_promotion       as estUnitsPromotion
+        from
+           bison_amz_product_inventory.sale_plan_item sp_item
+           left join
+                  bison_amz_product_inventory.sale_plan sp
+           on
+             sp_item.sale_plan_id = sp.sale_plan_id
+        where
+          sp_item.product_id = #{productId}
+          and sp_item.country = #{countryId}
+          and sp.user_id = #{userId}
+          and sp.plan_date like concat('',#{lastMonth},'%')
+
+          limit 1
+
+    </select>
+
+
+
+
 
 
 </mapper>

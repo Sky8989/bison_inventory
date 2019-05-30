@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace可以写类的全限定名，这样做的好处是
+　　sqlSession.insert(Student.class.getName()+".addStudent");
+-->
+<mapper namespace="com.leaderment.mapper.mybatis.ProductMapperEx">
+
+
+    <select id="findProductInventroyInfo" resultType="com.leaderment.pojo.vo.ProductInventroyVO">
+        SELECT
+            product_id							as productId,
+            total_safety_day					as totalSafetyDay,
+            amz_safety_day						as amzSafetyDay,
+            est_units_avg_day_ratio				as estUnitsAvgDayRatio,
+            last_units_avg_day_ratio			as lastUnitsAvgDayRatio,
+            big_last_units_avg_day				as bigLastUnitsAvgDay,
+            big_est_unitis_avg_day_ratio		as bigEstUnitisAvgDayRatio,
+            big_item_key_id						as bigItemKeyId,
+            samll_last_units_avg_day			as samllLastUnitsAvgDay,
+            samll_est_units_avg_day_ratio		as samllEstUnitsAvgDayRatio,
+            samll_item_key_id					as samllItemKeyId
+        FROM
+            bison.product
+        where
+            product_id = #{productId}
+    </select>
+
+    <update id="saveProductInventoryInfo"  parameterType="com.leaderment.pojo.vo.ProductInventroyVO" >
+    update
+        bison.product
+    set
+        total_safety_day = #{totalSafetyDay},
+        amz_safety_day = #{amzSafetyDay},
+        est_units_avg_day_ratio	= #{estUnitsAvgDayRatio},
+        last_units_avg_day_ratio = #{lastUnitsAvgDayRatio},
+        big_last_units_avg_day = #{bigLastUnitsAvgDay},
+        big_est_unitis_avg_day_ratio = #{bigEstUnitisAvgDayRatio},
+        big_item_key_id	= #{bigItemKeyId},
+        samll_last_units_avg_day = #{samllLastUnitsAvgDay},
+        samll_est_units_avg_day_ratio = #{samllEstUnitsAvgDayRatio},
+        samll_item_key_id = #{samllItemKeyId}
+    where
+        product_id = #{productId}
+    </update>
+
+    <select id="findProductIdListBybusinessUnitId" resultType="java.lang.Integer">
+        SELECT
+            product_id
+        FROM
+            bison.product
+        where
+            business_unit_id = #{businessUnitId}
+    </select>
+
+    <update id="batchUpdateProductInventoryInfo" >
+        update
+        bison.product
+    set
+        total_safety_day = #{productInventroyVO.totalSafetyDay},
+        amz_safety_day = #{productInventroyVO.amzSafetyDay},
+        est_units_avg_day_ratio	= #{productInventroyVO.estUnitsAvgDayRatio},
+        last_units_avg_day_ratio = #{productInventroyVO.lastUnitsAvgDayRatio},
+        big_last_units_avg_day = #{productInventroyVO.bigLastUnitsAvgDay},
+        big_est_unitis_avg_day_ratio = #{productInventroyVO.bigEstUnitisAvgDayRatio},
+        big_item_key_id	= #{productInventroyVO.bigItemKeyId},
+        samll_last_units_avg_day = #{productInventroyVO.samllLastUnitsAvgDay},
+        samll_est_units_avg_day_ratio = #{productInventroyVO.samllEstUnitsAvgDayRatio},
+        samll_item_key_id = #{productInventroyVO.samllItemKeyId}
+    where
+        <if test="productIdList != null and productIdList.size() > 0">
+            product_id in
+            <foreach item="productId" collection="productIdList" open="(" close=")" separator=",">
+                #{productId}
+            </foreach>
+        </if>
+
+    </update>
+
+    <select id="findModelNumberByproductCategoryIdAndBusinessUnitId" resultType="com.leaderment.pojo.Product">
+    SELECT
+        product_id 				as productId,
+        product_model_number    as productModelNumber
+    FROM
+        bison.product
+    where
+        business_unit_id = #{businessUnitId}
+        and product_category_id = #{productCategoryId}
+
+    </select>
+
+    <select id="findModelNumberByBrandId" resultType="com.leaderment.pojo.Product">
+        SELECT
+        product_id 				as productId,
+        product_model_number    as productModelNumber
+    FROM
+        bison.product
+    where
+        brand_id = #{brandId}
+
+    </select>
+
+
+
+</mapper>

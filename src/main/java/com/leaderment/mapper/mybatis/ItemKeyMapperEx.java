@@ -29,4 +29,9 @@ public interface ItemKeyMapperEx {
 
     ItemKey findByItemKeyId(int itemKeyId);
 
+    List<ItemKey> findByProductIdAndType(@Param("productId")int productId,  @Param("type")int type);
+
+    List<ItemKey> findByProductIdAndStatus(@Param("productId")int productId, @Param("status")int status);
+
+    List<ItemKey> findEstItemKeyListByUserId(@Param("userId")int userId, @Param("type")int type);
 }

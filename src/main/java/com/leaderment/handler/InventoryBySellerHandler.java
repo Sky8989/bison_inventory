@@ -2,16 +2,16 @@ package com.leaderment.handler;
 
 
 import com.leaderment.mapper.mybatis.SalePlanMapperEx;
+import com.leaderment.pojo.dto.InventoryDTO;
+import com.leaderment.service.BrandService;
 import com.leaderment.service.BusinessUnitService;
+import com.leaderment.service.InventoryBySellerService;
 import com.leaderment.service.ItemKeyService;
 import com.leaderment.util.entity.ResultBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -32,16 +32,42 @@ public class InventoryBySellerHandler {
     BusinessUnitService businessUnitService;
 
     @Autowired
+    BrandService brandService;
+
+    @Autowired
     SalePlanMapperEx salePlanMapperEx;
+
+    @Autowired
+    InventoryBySellerService inventoryBySellerService;
+
+
 
 
 
     @ApiOperation(value = "通过 userId 查询 businessUnitId")
-    @GetMapping(value = "/findByUserId/{userId}")
-    public ResultBean findByUserId(@PathVariable("userId") int userId){
+    @PostMapping(value = "/findSellerInventoryList")
+    public ResultBean findSellerInventoryList(@RequestBody InventoryDTO inventoryDTO){
 //        ResultBean resultBean = new ResultBean();
-        System.out.printf("userId = " + userId);
-        ResultBean resultBean = businessUnitService.findByUserId(userId);
+        System.out.printf("inventoryDTO" + inventoryDTO );
+        ResultBean resultBean = inventoryBySellerService.findSellerInventoryList(inventoryDTO);
+        return resultBean;
+    }
+
+    @ApiOperation(value = "通过 brandId  查询对应的 modelnumber")
+    @GetMapping(value = "/findModelNumberByBrandId/{brandId}}")
+    public ResultBean findModelNumberByBrandId(@PathVariable("brandId") int brandId){
+        System.out.println("brandId = " + brandId );
+        ResultBean resultBean = brandService.findModelNumberByBrandId(brandId);
+        return resultBean;
+    }
+
+
+    @ApiOperation(value = "通过 brandId 和 countryId 查询对应的 modelnumber")
+    @GetMapping(value = "/findModelNumberByBrandIdAndCountryId/{brandId}/{countryId}")
+    public ResultBean findModelNumberByBrandIdAndCountryId(@PathVariable("brandId") int brandId,
+                                                                          @PathVariable("countryId") int countryId){
+        System.out.println("brandId = " + brandId + "== countryId =" + countryId);
+        ResultBean resultBean = brandService.findModelNumberByBrandIdAndCountryId(brandId,countryId);
         return resultBean;
     }
 

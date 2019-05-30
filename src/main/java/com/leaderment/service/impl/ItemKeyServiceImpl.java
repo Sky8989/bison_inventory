@@ -47,4 +47,34 @@ public class ItemKeyServiceImpl implements ItemKeyService {
         List<ItemKey> itemKeyList = itemKeyMapperEx.findByBusinessUnitIdAndStatus(businessUnitId,1);
         return null;
     }
+
+    @Override
+    public ResultBean findItemKeyByProductId(int productId) {
+        ResultBean resultBean = new ResultBean();
+
+        if(productId == 0){
+            resultBean.setCode(500);
+            resultBean.setMsg("产品id为空!");
+            return resultBean;
+        }
+        List<ItemKey>  itemKeyList = itemKeyMapperEx.findByProductIdAndType(productId,2);
+        resultBean.setData(itemKeyList);
+
+        return resultBean;
+    }
+
+    @Override
+    public ResultBean findEstItemKeyListByUserId(int userId) {
+        ResultBean resultBean = new ResultBean();
+
+        if(userId == 0){
+            resultBean.setCode(500);
+            resultBean.setMsg("用户id为空!");
+            return resultBean;
+        }
+        List<ItemKey>  itemKeyList = itemKeyMapperEx.findEstItemKeyListByUserId(userId,2);
+        resultBean.setData(itemKeyList);
+
+        return resultBean;
+    }
 }

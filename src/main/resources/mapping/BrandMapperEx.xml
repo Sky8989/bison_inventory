@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace可以写类的全限定名，这样做的好处是
+　　sqlSession.insert(Student.class.getName()+".addStudent");
+-->
+<mapper namespace="com.leaderment.mapper.mybatis.BrandMapperEx">
+
+    <select id="findModelNumberByBrandId" resultType="com.leaderment.pojo.Product">
+        select
+            p.product_id                as productId,
+            p.product_model_number      as productModelNumber
+        from
+            bison.product p
+        left join
+            bison_amz_product_inventory.user_product_amz_asin_rel rel
+        on
+            p.product_id = rel.product_id
+        left join
+            bison.amz_seller s
+        on
+            rel.seller_id = s.seller_id
+        where
+            s.brand_id = #{brandId}
+        group by
+            p.product_id
+    </select>
+
+
+    <select id="findModelNumberByBrandIdAndCountryId" resultType="com.leaderment.pojo.Product">
+        select
+            p.product_id                as productId,
+            p.product_model_number      as productModelNumber
+
+        from
+            bison.product p
+        left join
+            bison_amz_product_inventory.user_product_amz_asin_rel rel
+        on
+            p.product_id = rel.product_id
+        left join
+            bison.amz_seller s
+        on
+            rel.seller_id = s.seller_id
+        where
+            rel.country_id = #{countryId}
+            and s.brand_id = #{brandId}
+        group by
+            p.product_id
+
+    </select>
+
+
+
+</mapper>

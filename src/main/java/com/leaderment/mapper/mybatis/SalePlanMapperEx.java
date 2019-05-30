@@ -40,4 +40,7 @@ public interface SalePlanMapperEx {
     int save(SalePlan salePlan);
 
     SalePlan findBySalePlanItemId(int salePlanId);
+
+  //  Integer findProductLastUnitsOrderSum(@Param("lastDayVal") int lastDayVal, @Param("countryIdList")List<Integer> countryIdList, @Param("asinIdList")List<Integer> asinIdList);
+    Integer findProductLastUnitsOrderSum(@Param("lastDayVal") int lastDayVal,  @Param("asinIdList")List<Integer> asinIdList);
 }

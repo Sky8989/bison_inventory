@@ -34,4 +34,20 @@ public interface InventoryMapperEx {
      * @return
      */
     List<InventoryVO> findModelNumberInventoryList(InventoryDTO inventoryDTO);
+
+
+
+    /**
+     * 不可卖
+     * @param asinId
+     * @return
+     */
+    Integer findAfnUnsellableQuantityByAsinId(int asinId);
+
+    /**
+     * 按 账号汇总 库存数量
+     * @param inventoryDTO
+     * @return
+     */
+    List<InventoryVO> findSellerInventoryList(InventoryDTO inventoryDTO);
 }

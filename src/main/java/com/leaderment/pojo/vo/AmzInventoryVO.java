@@ -23,12 +23,12 @@ public class AmzInventoryVO {
     /**
      *  可售
      */
-    private int fulfillableQuantity;
+    private int afnFulfillableQuantity;
 
     /**
      *  不可售
      */
-    private int unsellableQuantity;
+    private int afnUnsellableQuantity;
 
 
     /**
@@ -42,7 +42,7 @@ public class AmzInventoryVO {
      *  亚马逊总库存 = 可售 + 在途
      * @return
      */
-    private int amzInventorySum;
+    private int amzTotalInventoryQuantity;
 
     /**
      * 亚马逊总可售天数 = 亚马逊总库存 / 备货日均
@@ -50,11 +50,7 @@ public class AmzInventoryVO {
      */
     private int  amzFulfillableQuantityDay;
 
-    /**
-     * 亚马逊安全库存天数
-     * @return
-     */
-    private int amzSafetyDay;
+
 
 
     //亚马逊需补发数量
@@ -71,5 +67,100 @@ public class AmzInventoryVO {
      */
     private int replenishmentQuantity;
 
+    public int getProductId() {
+        return productId;
+    }
 
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getProductModelNumber() {
+        return productModelNumber;
+    }
+
+    public void setProductModelNumber(String productModelNumber) {
+        this.productModelNumber = productModelNumber;
+    }
+
+    public int getAfnFulfillableQuantity() {
+        return afnFulfillableQuantity;
+    }
+
+    public void setAfnFulfillableQuantity(int afnFulfillableQuantity) {
+        this.afnFulfillableQuantity = afnFulfillableQuantity;
+    }
+
+    public int getAfnUnsellableQuantity() {
+        return afnUnsellableQuantity;
+    }
+
+    public void setAfnUnsellableQuantity(int afnUnsellableQuantity) {
+        this.afnUnsellableQuantity = afnUnsellableQuantity;
+    }
+
+    public int getShippedAndReceivingQuantity() {
+        return shippedAndReceivingQuantity;
+    }
+
+    public void setShippedAndReceivingQuantity(int shippedAndReceivingQuantity) {
+        this.shippedAndReceivingQuantity = shippedAndReceivingQuantity;
+    }
+
+    public int getAmzTotalInventoryQuantity() {
+        return amzTotalInventoryQuantity;
+    }
+
+    public void setAmzTotalInventoryQuantity(int amzTotalInventoryQuantity) {
+        this.amzTotalInventoryQuantity = amzTotalInventoryQuantity;
+    }
+
+    public int getAmzFulfillableQuantityDay() {
+        return amzFulfillableQuantityDay;
+    }
+
+    public void setAmzFulfillableQuantityDay(int amzFulfillableQuantityDay) {
+        this.amzFulfillableQuantityDay = amzFulfillableQuantityDay;
+    }
+
+
+    public int getAmzReplenishmentDay() {
+        return amzReplenishmentDay;
+    }
+
+    public void setAmzReplenishmentDay(int amzReplenishmentDay) {
+        this.amzReplenishmentDay = amzReplenishmentDay;
+    }
+
+    public int getReplenishmentQuantity() {
+        return replenishmentQuantity;
+    }
+
+    public void setReplenishmentQuantity(int replenishmentQuantity) {
+        this.replenishmentQuantity = replenishmentQuantity;
+    }
+
+    @Override
+    public String toString() {
+        return "AmzInventoryVO{" +
+                "productId=" + productId +
+                ", userId=" + userId +
+                ", productModelNumber='" + productModelNumber + '\'' +
+                ", afnFulfillableQuantity=" + afnFulfillableQuantity +
+                ", afnUnsellableQuantity=" + afnUnsellableQuantity +
+                ", shippedAndReceivingQuantity=" + shippedAndReceivingQuantity +
+                ", amzTotalInventoryQuantity=" + amzTotalInventoryQuantity +
+                ", amzFulfillableQuantityDay=" + amzFulfillableQuantityDay +
+                ", amzReplenishmentDay=" + amzReplenishmentDay +
+                ", replenishmentQuantity=" + replenishmentQuantity +
+                '}';
+    }
 }

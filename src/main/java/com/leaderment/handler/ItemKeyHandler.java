@@ -39,5 +39,25 @@ public class ItemKeyHandler {
         return resultBean;
     }
 
+    @ApiOperation(value = "查询通过 productId  查询自定义列表  ")
+    @GetMapping(value = "/findItemKeyByProductId/{productId}")
+    public ResultBean findItemKeyByProductId(@PathVariable("productId") int productId){
+        // ResultBean resultBean = new ResultBean();
+        ResultBean resultBean = itemKeyService.findItemKeyByProductId(productId);
+
+
+        return resultBean;
+    }
+
+    @ApiOperation(value = "查询通过userId 查询自定义列表  ")
+    @GetMapping(value = "/findEstItemKeyListByUserId/{userId}")
+    public ResultBean findEstItemKeyListByUserId(@PathVariable("userId") int userId){
+        // ResultBean resultBean = new ResultBean();
+        ResultBean resultBean = itemKeyService.findEstItemKeyListByUserId(userId);
+
+
+        return resultBean;
+    }
+
 
 }

@@ -1,6 +1,11 @@
 package com.leaderment.pojo.vo;
 
 
+import com.leaderment.pojo.ItemKey;
+
+import java.math.BigDecimal;
+import java.util.List;
+
 /**
  * @ClassName Inventory展示视图
  * @Description TODO
@@ -11,9 +16,11 @@ package com.leaderment.pojo.vo;
 
 public class InventoryVO {
 
+
     private int productId;
 
     private String productModelNumber;
+
 
     private int userId;
 
@@ -23,8 +30,9 @@ public class InventoryVO {
     //账号汇总 需要添加的信息
 
     private int sellerId;
-    private String sellerName;
+    private String brandName;
     private int countryId;
+    private String countryName;
 
 
     //SKU汇总 需要添加的信息
@@ -34,16 +42,27 @@ public class InventoryVO {
 
     //日均相关
     /**
-     * 加权后 历史日均
+     * 加权历史日均
      */
     private int lastUnitsAvgDay;
+
+    /**
+     * 加权历史日均比率
+     */
+    private BigDecimal lastUnitsAvgDayRatio;
+
     /**
      * 加权预测日均
      */
     private int estUnitsAvgDay;
+    /**
+     * 加权预测日均比率
+     */
+    private BigDecimal estUnitsAvgDayRatio;
+
 
     /**
-     * 备货日均
+     * 备货日均 = (lastUnitsAvgDay * lastUnitsAvgDayRatio + estUnitsAvgDay * estUnitsAvgDayRatio)
      */
     private int stockingAvgDay;
 
@@ -93,6 +112,112 @@ public class InventoryVO {
     private String operationsRemark;
 
 
+
+    //库存设置提醒相关
+
+    /**
+     * 库存设置提醒 大于方向 历史日均
+     */
+    private int  bigLastUnitsAvgDay;
+
+    /**
+     * 库存设置提醒 大于方向 预测日均比率
+     */
+    private BigDecimal bigEstUnitisAvgDayRatio;
+
+    /**
+     * 库存设置提醒 大于方向 对应 item_key_id
+     */
+    private int bigItemKeyId;
+
+
+    /**
+     *库存设置提醒 小于方向 对应 历史日均天数
+     */
+    private int samllLastUnitsAvgDay;
+
+    /**
+     * 库存设置提醒 小于方向 对应 预测日均比率
+     */
+    private BigDecimal samllEstUnitsAvgDayRatio;
+
+    /**
+     * 库存设置提醒 小于方向 对应 item_key_id
+     */
+    private int samllItemKeyId;
+
+
+
+
+
+    /**
+     * 设置一 的提醒
+     */
+    private boolean redRemind = false;
+
+
+    /**
+     * 设置二 的提醒
+     */
+    private boolean blueRemind = false;
+
+
+
+
+
+    /**
+     * 亚马逊安全库存
+     */
+    private int amzSafetyDay;
+
+
+    /**
+     * 亚马逊相关数据视图
+     */
+    private AmzInventoryVO amzInventoryVO;
+
+    /**
+     * 产品对应的 预测自定义列
+     */
+    List<ItemKey> estItemKeyList;
+    /**
+     * 产品对应的 预测自定义列
+     */
+    List<ItemKey> lastItemKeyList;
+
+
+    public List<ItemKey> getEstItemKeyList() {
+        return estItemKeyList;
+    }
+
+    public void setEstItemKeyList(List<ItemKey> estItemKeyList) {
+        this.estItemKeyList = estItemKeyList;
+    }
+
+    public List<ItemKey> getLastItemKeyList() {
+        return lastItemKeyList;
+    }
+
+    public void setLastItemKeyList(List<ItemKey> lastItemKeyList) {
+        this.lastItemKeyList = lastItemKeyList;
+    }
+
+    public int getAmzSafetyDay() {
+        return amzSafetyDay;
+    }
+
+    public void setAmzSafetyDay(int amzSafetyDay) {
+        this.amzSafetyDay = amzSafetyDay;
+    }
+
+    public AmzInventoryVO getAmzInventoryVO() {
+        return amzInventoryVO;
+    }
+
+    public void setAmzInventoryVO(AmzInventoryVO amzInventoryVO) {
+        this.amzInventoryVO = amzInventoryVO;
+    }
+
     public int getProductId() {
         return productId;
     }
@@ -133,12 +258,12 @@ public class InventoryVO {
         this.sellerId = sellerId;
     }
 
-    public String getSellerName() {
-        return sellerName;
+    public String getBrandName() {
+        return brandName;
     }
 
-    public void setSellerName(String sellerName) {
-        this.sellerName = sellerName;
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
     }
 
     public int getCountryId() {
@@ -253,6 +378,94 @@ public class InventoryVO {
         this.operationsRemark = operationsRemark;
     }
 
+    public BigDecimal getLastUnitsAvgDayRatio() {
+        return lastUnitsAvgDayRatio;
+    }
+
+    public void setLastUnitsAvgDayRatio(BigDecimal lastUnitsAvgDayRatio) {
+        this.lastUnitsAvgDayRatio = lastUnitsAvgDayRatio;
+    }
+
+    public BigDecimal getEstUnitsAvgDayRatio() {
+        return estUnitsAvgDayRatio;
+    }
+
+    public void setEstUnitsAvgDayRatio(BigDecimal estUnitsAvgDayRatio) {
+        this.estUnitsAvgDayRatio = estUnitsAvgDayRatio;
+    }
+
+    public int getBigLastUnitsAvgDay() {
+        return bigLastUnitsAvgDay;
+    }
+
+    public void setBigLastUnitsAvgDay(int bigLastUnitsAvgDay) {
+        this.bigLastUnitsAvgDay = bigLastUnitsAvgDay;
+    }
+
+    public BigDecimal getBigEstUnitisAvgDayRatio() {
+        return bigEstUnitisAvgDayRatio;
+    }
+
+    public void setBigEstUnitisAvgDayRatio(BigDecimal bigEstUnitisAvgDayRatio) {
+        this.bigEstUnitisAvgDayRatio = bigEstUnitisAvgDayRatio;
+    }
+
+    public int getBigItemKeyId() {
+        return bigItemKeyId;
+    }
+
+    public void setBigItemKeyId(int bigItemKeyId) {
+        this.bigItemKeyId = bigItemKeyId;
+    }
+
+    public int getSamllLastUnitsAvgDay() {
+        return samllLastUnitsAvgDay;
+    }
+
+    public void setSamllLastUnitsAvgDay(int samllLastUnitsAvgDay) {
+        this.samllLastUnitsAvgDay = samllLastUnitsAvgDay;
+    }
+
+    public BigDecimal getSamllEstUnitsAvgDayRatio() {
+        return samllEstUnitsAvgDayRatio;
+    }
+
+    public void setSamllEstUnitsAvgDayRatio(BigDecimal samllEstUnitsAvgDayRatio) {
+        this.samllEstUnitsAvgDayRatio = samllEstUnitsAvgDayRatio;
+    }
+
+    public int getSamllItemKeyId() {
+        return samllItemKeyId;
+    }
+
+    public void setSamllItemKeyId(int samllItemKeyId) {
+        this.samllItemKeyId = samllItemKeyId;
+    }
+
+    public boolean isRedRemind() {
+        return redRemind;
+    }
+
+    public void setRedRemind(boolean redRemind) {
+        this.redRemind = redRemind;
+    }
+
+    public boolean isBlueRemind() {
+        return blueRemind;
+    }
+
+    public void setBlueRemind(boolean blueRemind) {
+        this.blueRemind = blueRemind;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
     @Override
     public String toString() {
         return "InventoryVO{" +
@@ -261,12 +474,15 @@ public class InventoryVO {
                 ", userId=" + userId +
                 ", productCategory='" + productCategory + '\'' +
                 ", sellerId=" + sellerId +
-                ", sellerName='" + sellerName + '\'' +
+                ", brandName='" + brandName + '\'' +
                 ", countryId=" + countryId +
+                ", countryName='" + countryName + '\'' +
                 ", sellerSkuId=" + sellerSkuId +
                 ", sku='" + sku + '\'' +
                 ", lastUnitsAvgDay=" + lastUnitsAvgDay +
+                ", lastUnitsAvgDayRatio=" + lastUnitsAvgDayRatio +
                 ", estUnitsAvgDay=" + estUnitsAvgDay +
+                ", estUnitsAvgDayRatio=" + estUnitsAvgDayRatio +
                 ", stockingAvgDay=" + stockingAvgDay +
                 ", estUnitsPromotion=" + estUnitsPromotion +
                 ", totalSafetyDay=" + totalSafetyDay +
@@ -276,6 +492,18 @@ public class InventoryVO {
                 ", replenishmentQuantity=" + replenishmentQuantity +
                 ", salesRemark='" + salesRemark + '\'' +
                 ", operationsRemark='" + operationsRemark + '\'' +
+                ", bigLastUnitsAvgDay=" + bigLastUnitsAvgDay +
+                ", bigEstUnitisAvgDayRatio=" + bigEstUnitisAvgDayRatio +
+                ", bigItemKeyId=" + bigItemKeyId +
+                ", samllLastUnitsAvgDay=" + samllLastUnitsAvgDay +
+                ", samllEstUnitsAvgDayRatio=" + samllEstUnitsAvgDayRatio +
+                ", samllItemKeyId=" + samllItemKeyId +
+                ", redRemind=" + redRemind +
+                ", blueRemind=" + blueRemind +
+                ", amzSafetyDay=" + amzSafetyDay +
+                ", amzInventoryVO=" + amzInventoryVO +
+                ", estItemKeyList=" + estItemKeyList +
+                ", lastItemKeyList=" + lastItemKeyList +
                 '}';
     }
 }

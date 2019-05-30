@@ -9,4 +9,9 @@ public interface ItemKeyService {
 
 
     ResultBean findItemKeyByBusinessUnitId(int businessUnitId);
+
+    ResultBean findItemKeyByProductId(int productId);
+
+    ResultBean findEstItemKeyListByUserId(int userId);
+
 }
