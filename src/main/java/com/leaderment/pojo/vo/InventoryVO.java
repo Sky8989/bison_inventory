@@ -38,7 +38,10 @@ public class InventoryVO {
     //SKU汇总 需要添加的信息
     private int sellerSkuId;
     private String sku;
-
+    /**
+     * sku是否激活状态
+     */
+    private int yFlag;
 
     //日均相关
     /**
@@ -163,8 +166,6 @@ public class InventoryVO {
 
 
 
-
-
     /**
      * 亚马逊安全库存
      */
@@ -176,6 +177,12 @@ public class InventoryVO {
      */
     private AmzInventoryVO amzInventoryVO;
 
+
+    /**
+     * 深圳仓 相关数据视图
+     */
+    private LocalInventoryVO localInventoryVO;
+
     /**
      * 产品对应的 预测自定义列
      */
@@ -185,6 +192,22 @@ public class InventoryVO {
      */
     List<ItemKey> lastItemKeyList;
 
+
+    public int getyFlag() {
+        return yFlag;
+    }
+
+    public void setyFlag(int yFlag) {
+        this.yFlag = yFlag;
+    }
+
+    public LocalInventoryVO getLocalInventoryVO() {
+        return localInventoryVO;
+    }
+
+    public void setLocalInventoryVO(LocalInventoryVO localInventoryVO) {
+        this.localInventoryVO = localInventoryVO;
+    }
 
     public List<ItemKey> getEstItemKeyList() {
         return estItemKeyList;
@@ -479,6 +502,7 @@ public class InventoryVO {
                 ", countryName='" + countryName + '\'' +
                 ", sellerSkuId=" + sellerSkuId +
                 ", sku='" + sku + '\'' +
+                ", yFlag=" + yFlag +
                 ", lastUnitsAvgDay=" + lastUnitsAvgDay +
                 ", lastUnitsAvgDayRatio=" + lastUnitsAvgDayRatio +
                 ", estUnitsAvgDay=" + estUnitsAvgDay +
@@ -502,6 +526,7 @@ public class InventoryVO {
                 ", blueRemind=" + blueRemind +
                 ", amzSafetyDay=" + amzSafetyDay +
                 ", amzInventoryVO=" + amzInventoryVO +
+                ", localInventoryVO=" + localInventoryVO +
                 ", estItemKeyList=" + estItemKeyList +
                 ", lastItemKeyList=" + lastItemKeyList +
                 '}';

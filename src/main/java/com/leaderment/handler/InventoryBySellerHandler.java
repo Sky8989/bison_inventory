@@ -44,7 +44,7 @@ public class InventoryBySellerHandler {
 
 
 
-    @ApiOperation(value = "通过 userId 查询 businessUnitId")
+    @ApiOperation(value = "通过 查询 账号库存信息")
     @PostMapping(value = "/findSellerInventoryList")
     public ResultBean findSellerInventoryList(@RequestBody InventoryDTO inventoryDTO){
 //        ResultBean resultBean = new ResultBean();

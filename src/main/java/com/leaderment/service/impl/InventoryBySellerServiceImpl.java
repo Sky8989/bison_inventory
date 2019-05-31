@@ -48,12 +48,11 @@ public class InventoryBySellerServiceImpl implements InventoryBySellerService {
             return resultBean;
         }
 
-        inventoryDTO.setLocalMonth(new SimpleDateFormat("YYYY-MM").format(new Date()));
-        System.out.printf("inventoryDTO ",inventoryDTO);
 
-        List<InventoryVO> inventoryList =  inventoryMapperEx.findSellerInventoryList(inventoryDTO);
-        System.out.println("inventoryList = " + inventoryList );
-        inventoryList = getLastUntisAvgDayAndEstUntisAvgDay(inventoryList);
+        List<InventoryVO> inventoryList =  getInventoryVOList(inventoryDTO);
+
+
+        inventoryList = inventoryByModelNumberServiceImpl.forEachInventoryVO(inventoryList);
 
 
         resultBean.setData(inventoryList);
@@ -61,25 +60,16 @@ public class InventoryBySellerServiceImpl implements InventoryBySellerService {
         return resultBean;
     }
 
-    private List<InventoryVO> getLastUntisAvgDayAndEstUntisAvgDay(List<InventoryVO> inventoryList) {
-        for (InventoryVO inventoryVO : inventoryList) {
-            //计算 加权历史日均 加权预测日均
-            getLastUntisAvgDayBySalePlanItemId(inventoryVO);
+    private List<InventoryVO> getInventoryVOList(InventoryDTO inventoryDTO) {
+        inventoryDTO.setLocalMonth(new SimpleDateFormat("YYYY-MM").format(new Date()));
+        System.out.printf("inventoryDTO ",inventoryDTO);
 
-            //计算 提醒设置
-            long start = System.currentTimeMillis();
-            inventoryByModelNumberServiceImpl.getredRemindAndBuleRemind(inventoryVO);
-            long end = System.currentTimeMillis();
-            System.out.println("end - start = " + (end - start));
-            //亚马逊相关数据计算--
-            AmzInventoryVO amzInventoryVO = inventoryByModelNumberServiceImpl.amzInventory(inventoryVO);
-            System.out.println("amzInventoryVO = " + amzInventoryVO);
-            inventoryVO.setAmzInventoryVO(amzInventoryVO);
-        }
+        List<InventoryVO> inventoryList =  inventoryMapperEx.findSellerInventoryList(inventoryDTO);
+        System.out.println("inventoryList = " + inventoryList);
 
         return inventoryList;
     }
 
-    private void getLastUntisAvgDayBySalePlanItemId(InventoryVO inventoryVO) {
-    }
+
+
 }

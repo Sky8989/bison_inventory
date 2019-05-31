@@ -36,5 +36,12 @@ public interface SalePlanItemMapperEx {
     SalePlanItemVO findLastMonthSalePlanItemVO(@Param("userId")int userId, @Param("productId")int productId,
                                                @Param("countryId")int countryId,@Param("lastMonth") String lastMonth);
 
-    List<SalePlanItemVO> findSalePlanItemByProductId(@Param("inventoryVO")InventoryVO inventoryVO, @Param("localMonth")String localMonth);
+    /**
+     * 查询当前产品下的 销售计划子项  countryId不为0 seller汇总
+     * @param
+     * @param localMonth
+     * @return
+     */
+    List<SalePlanItemVO> findSalePlanItemByProductId(@Param("productId")int productId,
+                                                     @Param("countryId")int countryId, @Param("localMonth")String localMonth);
 }

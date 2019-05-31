@@ -64,17 +64,26 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
             return resultBean;
         }
 
-        inventoryDTO.setLocalMonth(new SimpleDateFormat("YYYY-MM").format(new Date()));
-        System.out.printf("inventoryDTO ",inventoryDTO);
-
-        List<InventoryVO> inventoryList =  inventoryMapperEx.findModelNumberInventoryList(inventoryDTO);
+        List<InventoryVO> inventoryList = getInventoryVOList(inventoryDTO);
         System.out.println("inventoryList = " + inventoryList );
-        inventoryList = getLastUntisAvgDayAndEstUntisAvgDay(inventoryList);
+
+        //遍历计算库存
+        inventoryList = forEachInventoryVO(inventoryList);
 
         resultBean.setData(inventoryList);
 
 
         return resultBean;
+    }
+
+    public List<InventoryVO> getInventoryVOList(InventoryDTO inventoryDTO) {
+        inventoryDTO.setLocalMonth(new SimpleDateFormat("YYYY-MM").format(new Date()));
+        System.out.printf("inventoryDTO ",inventoryDTO);
+
+        List<InventoryVO>  inventoryList =  inventoryMapperEx.findModelNumberInventoryList(inventoryDTO);
+
+        return inventoryList;
+
     }
 
     @Override
@@ -220,27 +229,67 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
      * @param inventoryList
      * @return
      */
-    private List<InventoryVO> getLastUntisAvgDayAndEstUntisAvgDay(List<InventoryVO> inventoryList) {
+    public List<InventoryVO> forEachInventoryVO(List<InventoryVO> inventoryList) {
 
         for(InventoryVO inventoryVO : inventoryList){
         //计算 加权历史日均 加权预测日均 计算活动预测量
         getLastUntisAvgDayBySalePlanItemId(inventoryVO);
 
         //计算 提醒设置
-            long start = System.currentTimeMillis();
         getredRemindAndBuleRemind(inventoryVO);
-            long end = System.currentTimeMillis();
-            System.out.println("end - start = " + (end - start));
+
         //亚马逊相关数据计算--
         AmzInventoryVO amzInventoryVO = amzInventory(inventoryVO);
+
         System.out.println("amzInventoryVO = " + amzInventoryVO);
+
         inventoryVO.setAmzInventoryVO(amzInventoryVO);
 
+        //深圳本地仓计算
+        LocalInventoryVO localInventoryVO = getLocalInventoryVO(inventoryVO);
+        inventoryVO.setLocalInventoryVO(localInventoryVO);
+
         }
-
-
-
         return inventoryList;
+    }
+
+    private LocalInventoryVO getLocalInventoryVO(InventoryVO inventoryVO) {
+        LocalInventoryVO localInventoryVO = new LocalInventoryVO();
+
+        int productId = inventoryVO.getProductId();
+
+
+        //1:计算FN库存
+            //1.1 FN入库
+            Integer localFnStorage = inventoryMapperEx.getLocalFnStorage(productId);
+            localFnStorage = localFnStorage == null ? 0 : localFnStorage;
+            //1.2 FN出库
+            Integer localFnExport = inventoryMapperEx.getLocalFnExport(productId);
+            localFnExport = localFnExport == null ? 0 : localFnExport;
+
+
+            localInventoryVO.setFnInventoryQuantity(localFnStorage - localFnExport);
+
+
+
+        //2:计算UPC库存
+            //2.1 UPC入库
+            Integer localUpcStoreage = inventoryMapperEx.getLocalUpcStoreage(productId);
+            localUpcStoreage = localUpcStoreage == null ? 0 : localUpcStoreage;
+            //2.2 UPC出库
+            Integer localUpcExport = inventoryMapperEx.getLocalUpcExport(productId);
+            localUpcExport = localUpcExport == null ? 0 : localUpcExport;
+
+            localInventoryVO.setUpcInventoryQuantity(localUpcStoreage - localUpcExport);
+
+        //3:深圳仓总库存 = FN库存+UPC库存
+        localInventoryVO.setLocalInventoryTotalQuantity(localInventoryVO.getFnInventoryQuantity() + localInventoryVO.getUpcInventoryQuantity());
+
+
+
+
+        return localInventoryVO;
+
     }
 
     public void getredRemindAndBuleRemind(InventoryVO inventoryVO) {
@@ -249,11 +298,13 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
         //获取当前产品所对应的 所有 国家List 和 Asin List
 
         List<SalePlanItemVO> salePlanItemList = null;
+
         List<Integer> asinIdList = userProductAmzAsinRelMapperEx.findAsinIdListByProductId(inventoryVO.getProductId());
-        List<Integer> countryIdList = userProductAmzAsinRelMapperEx.findCountryIdByProductId(inventoryVO.getProductId());
+       // List<Integer> countryIdList = userProductAmzAsinRelMapperEx.findCountryIdByProductId(inventoryVO.getProductId());
 
 
-        if((asinIdList != null && asinIdList.size() > 0) && (countryIdList != null && countryIdList.size()  > 0)){
+      //  if((asinIdList != null && asinIdList.size() > 0) && (countryIdList != null && countryIdList.size()  > 0)){
+        if((asinIdList != null && asinIdList.size() > 0) ){
             //提醒设置一
             int bigLastUnitsAvgDay = inventoryVO.getBigLastUnitsAvgDay();
             int bigItemKeyId = inventoryVO.getBigItemKeyId();
@@ -276,7 +327,8 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
                     if(salePlanItemList != null && salePlanItemList.size() > 0){
                         for(SalePlanItemVO salePlanItemVO : salePlanItemList){
                             //计算历史日均
-                            int lastUnitsAvgQuantity =  getLastUnitsAvgQuantity(salePlanItemVO,bigLastUnitsAvgDay,asinIdList,countryIdList);
+                         //   int lastUnitsAvgQuantity =  getLastUnitsAvgQuantity(salePlanItemVO,bigLastUnitsAvgDay,asinIdList,countryIdList);
+                            int lastUnitsAvgQuantity =  getLastUnitsAvgQuantity(salePlanItemVO,bigLastUnitsAvgDay,asinIdList);
                             if(lastUnitsAvgQuantity != 0){
                                 bigLastUnitsAvgQuantity = bigLastUnitsAvgQuantity.add(new BigDecimal(lastUnitsAvgQuantity));
                             }
@@ -296,9 +348,7 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
                     if(bigLastUnitsAvgQuantity.compareTo(bigItemKeyEstUntisAvgQuantity.multiply(bigEstUnitisAvgDayRatio)) > 0){
                         inventoryVO.setRedRemind(true);
                     }
-
                 }
-
 
 
             //提醒设置二
@@ -318,7 +368,8 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
                         for(SalePlanItemVO salePlanItemVO : salePlanItemList){
 
                             //计算历史日均
-                            int lastUnitsAvgQuantity =  getLastUnitsAvgQuantity(salePlanItemVO,samllLastUnitsAvgDay,asinIdList,countryIdList);
+                        //    int lastUnitsAvgQuantity =  getLastUnitsAvgQuantity(salePlanItemVO,samllLastUnitsAvgDay,asinIdList,countryIdList);
+                            int lastUnitsAvgQuantity =  getLastUnitsAvgQuantity(salePlanItemVO,samllLastUnitsAvgDay,asinIdList);
                             if(lastUnitsAvgQuantity != 0){
                                 samllLastUnitsAvgQuantity = samllLastUnitsAvgQuantity.add( new BigDecimal(lastUnitsAvgQuantity));
                             }
@@ -338,24 +389,16 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
                     if(samllLastUnitsAvgQuantity.compareTo(samllItemKeyEstUntisAvgQuantity.multiply(samllEstUnitsAvgDayRatio)) < 0){
                         inventoryVO.setBlueRemind(true);
                     }
-
-
-
             }
-
         }
-
-
-
-
     }
 
-    private int getLastUnitsAvgQuantity(SalePlanItemVO salePlanItemVO, int bigLastUnitsAvgDay, List<Integer> asinIdList ,List<Integer> countryIdList) {
+   // private int getLastUnitsAvgQuantity(SalePlanItemVO salePlanItemVO, int bigLastUnitsAvgDay, List<Integer> asinIdList ,List<Integer> countryIdList) {
+    private int getLastUnitsAvgQuantity(SalePlanItemVO salePlanItemVO, int bigLastUnitsAvgDay, List<Integer> asinIdList ) {
         System.out.println("getLastUnitsAvgQuantity === salePlanItemVO" + salePlanItemVO + " bigLastUnitsAvgDay == "
                 + bigLastUnitsAvgDay +" ```  asinIdList =" + asinIdList );
-        System.out.println("---countryIdList = " + countryIdList);
+   //     System.out.println("---countryIdList = " + countryIdList);
         int lastUnitsAvgQuantity = 0;
-
 
         Integer lastUnitsOrderSum = salePlanMapperEx.findProductLastUnitsOrderSum(bigLastUnitsAvgDay,asinIdList);
         lastUnitsOrderSum = lastUnitsOrderSum == null ? 0 : lastUnitsOrderSum;
@@ -390,7 +433,6 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
         return estUnitsAvgQuantity;
     }
 
-
     /**
      * 通过productId 去查询所有的 销量计划
      * @param inventoryVO
@@ -422,7 +464,7 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
             for(SalePlanItemVO  salePlanItemVO : salePlanItemList){
 
                 //判断  salePlanItem的状态
-                salePlanItemVO =  checkSalePlanItemStatus(salePlanItemVO);
+                salePlanItemVO = checkSalePlanItemStatus(salePlanItemVO);
 
                 //获取当前 销售计划item 下的 加权历史日均
                getWeightingLastUntisAvgDayBySalePlanItemId(salePlanItemVO);
@@ -452,7 +494,6 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
             BigDecimal estUntisAvgDayRatio = inventoryVO.getEstUnitsAvgDayRatio() == null ?
                     new BigDecimal(0) :
                     inventoryVO.getEstUnitsAvgDayRatio().multiply(new BigDecimal(weightingEstUntisAvgDaySum));
-
 
             //计算备货日均
             inventoryVO.setStockingAvgDay(lastUntisAvgDayRatio.add(estUntisAvgDayRatio).intValue());
@@ -580,11 +621,12 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
 
         List<ItemValVO>  itemValVOList =  salePlanMapperEx.findItemValBySalePlanItemId(salePlanItemVO.getSalePlanItemId());
 
-        //当前产品对应的asin
-        List<Integer> asinIdList = userProductAmzAsinRelMapperEx.findAsinIdListByProductId(salePlanItemVO.getProductId());
-      //  List<Integer> countryIdList = userProductAmzAsinRelMapperEx.findCountryIdByProductId(salePlanItemVO.getProductId());
+        //账号汇总
+        int asinId = salePlanItemMapperEx.findAsinIdByProductIdAndCountryIdByUserId(salePlanItemVO.getProductId(),
+                                                                                    salePlanItemVO.getCountryId(),
+                                                                                    salePlanItemVO.getUserId());
 
-        if((asinIdList != null && asinIdList.size() >  0)  ){
+        if(asinId != 0  ){
             /**
              * 对应规则id
              */
@@ -599,7 +641,8 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
                     //System.out.println("-------------==计算历史销量");
                     Integer lastUnitsOrderSum = 0;
 
-                        lastUnitsOrderSum = salePlanMapperEx.findProductLastUnitsOrderSum(lastDayVal,asinIdList);
+                        //lastUnitsOrderSum = salePlanMapperEx.findProductLastUnitsOrderSum(lastDayVal,asinIdList);
+                        lastUnitsOrderSum = salePlanMapperEx.getlastUnitsOrderedSum(lastDayVal,salePlanItemVO.getCountryId(),asinId);
                         lastUnitsOrderSum = lastUnitsOrderSum == null ? 0 : lastUnitsOrderSum;
 
                     //System.out.println("历史销量 ==" + lastUnitsOrderSum);
@@ -670,7 +713,8 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
         String localMonth = sdf.format(new Date());
 
         //当月下 指定产品的销售计划
-        List<SalePlanItemVO> salePlanItemVOList = salePlanItemMapperEx.findSalePlanItemByProductId(inventoryVO,localMonth);
+        List<SalePlanItemVO> salePlanItemVOList = salePlanItemMapperEx.findSalePlanItemByProductId(inventoryVO.getProductId(),
+                inventoryVO.getCountryId(),localMonth);
 
         //当月的计划 不存在选上个月的计划
         if(salePlanItemVOList == null || salePlanItemVOList.size() == 0){
@@ -681,7 +725,7 @@ public class InventoryByModelNumberServiceImpl implements InventoryByModelNumber
             calendar.set(Calendar.MONTH,monthOfYear - 1);
 
             String lastMonth = sdf.format(calendar.getTime());
-            salePlanItemVOList = salePlanItemMapperEx.findSalePlanItemByProductId(inventoryVO,lastMonth);
+            salePlanItemVOList = salePlanItemMapperEx.findSalePlanItemByProductId(inventoryVO.getProductId(),inventoryVO.getCountryId(),lastMonth);
         }
 
         return salePlanItemVOList;

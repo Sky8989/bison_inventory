@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace可以写类的全限定名，这样做的好处是
+　　sqlSession.insert(Student.class.getName()+".addStudent");
+-->
+<mapper namespace="com.leaderment.mapper.mybatis.AmzSellerSkuMapperEx">
+
+    <select id="findAll" resultType="com.leaderment.pojo.AmzSellerSku">
+        SELECT
+            seller_sku_id		as sellerSkuId,
+            seller_id			as sellerId,
+            asin_id				as asinId,
+            sku,
+            fnsku,
+            UPC,
+            yFlag,
+            record,
+            u_time				as uTime
+        FROM
+            bison_amz_product_inventory.amz_seller_sku
+    </select>
+
+    <select id="findSellerSkuListByProductId" resultType="com.leaderment.pojo.AmzSellerSku">
+        SELECT
+            seller_sku_id AS sellerSkuId,
+            seller_id AS sellerId,
+            asin_id AS asinId,
+            sku,
+            fnsku,
+            UPC,
+            yFlag,
+            record,
+            u_time AS uTime
+        FROM
+            bison_amz_product_inventory.amz_seller_sku
+        WHERE
+            seller_sku_id
+            IN (SELECT
+                    seller_sku_id
+                FROM
+                    bison_amz_product_inventory.user_product_amz_asin_rel
+                WHERE
+                    product_id = #{productId}
+                GROUP BY seller_sku_id)
+    </select>
+
+
+
+</mapper>

@@ -49,7 +49,7 @@
         where
           sp_item.product_id = #{productId}
           <if test="countryId != 0">
-              sp_item.country = #{countryId}
+              and sp_item.country = #{countryId}
           </if>
           and sp.plan_date like concat('',#{localMonth},'%')
 

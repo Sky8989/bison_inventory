@@ -251,7 +251,67 @@
     </select>
 
 
+    <select id="getLocalFnStorage" resultType="java.lang.Integer">
+         SELECT
+            sum(FLOOR(r1.i_quantity) + FLOOR(r8.i_quantity))
+        FROM
+            U8.rdrecords01 r1,
+            U8.rdrecords08 r8,
+            bison.product p
+        where
+            r1.c_inv_code = p.product_u8_code
+            and p.product_u8_code  = r8.c_inv_code
+            and p.product_id = #{productId}
+            and (r1.c_define23 = 'FN' or r1.c_define23 = 'FNSKU')
+            and (r8.c_define23 is null or r8.c_define23 = 'JP')
+            group by p.product_id
+    </select>
 
+    <select id="getLocalFnExport" resultType="java.lang.Integer">
+        SELECT
+            sum(FLOOR(r9.i_quantity)) as storageNumber9
+        FROM
+            U8.rdrecords01 r9,
+            bison.product p
+        where
+            r9.c_inv_code = p.product_u8_code
+            and p.product_id = #{productId}
+            and (r9.c_define23 = 'FNSKU' or r9.c_define23 is null)
+            group by p.product_id
+    </select>
+
+    <select id="getLocalUpcStoreage" resultType="java.lang.Integer">
+        SELECT
+            FLOOR(sum(r1.i_quantity)+sum(r8.i_quantity))
+        FROM
+            U8.rdrecords01 r1,
+            U8.rdrecords08 r8,
+            bison.product p
+        where
+            r1.c_inv_code = p.product_u8_code
+            and p.product_u8_code  = r8.c_inv_code
+            and p.product_id = #{productId}
+            and r1.c_define23 = 'UPC'
+            group by p.product_id
+    </select>
+
+    <select id="getLocalUpcExport" resultType="java.lang.Integer">
+        SELECT
+            sum(FLOOR(r9.i_quantity)) as storageNumber9
+        FROM
+            U8.rdrecords01 r9,
+            bison.product p
+        where
+            r9.c_inv_code = p.product_u8_code
+            and p.product_id = #{productId}
+            and r9.c_define23 = 'UPC'
+            group by p.product_id
+    </select>
+
+    <select id="findSkuInventoryList" parameterType="com.leaderment.pojo.dto.InventoryDTO"  resultType="com.leaderment.pojo.vo.InventoryVO">
+
+
+    </select>
 
 
 </mapper>

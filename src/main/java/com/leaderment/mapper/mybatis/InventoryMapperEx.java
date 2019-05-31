@@ -50,4 +50,39 @@ public interface InventoryMapperEx {
      * @return
      */
     List<InventoryVO> findSellerInventoryList(InventoryDTO inventoryDTO);
+
+    /**
+     * 本地仓 入库的FN
+     * @param productId
+     * @return
+     */
+    Integer getLocalFnStorage(int productId);
+
+    /**
+     * 本地仓 出库的FN
+     * @param productId
+     * @return
+     */
+    Integer getLocalFnExport(int productId);
+
+    /**
+     * 本地仓 入库的UPC
+     * @param productId
+     * @return
+     */
+    Integer getLocalUpcStoreage(int productId);
+
+    /**
+     * 本地仓 出库的UPC
+     * @param productId
+     * @return
+     */
+    Integer getLocalUpcExport(int productId);
+
+    /**
+     * 按SKU汇总 库存数量
+     * @param inventoryDTO
+     * @return
+     */
+    List<InventoryVO> findSkuInventoryList(InventoryDTO inventoryDTO);
 }

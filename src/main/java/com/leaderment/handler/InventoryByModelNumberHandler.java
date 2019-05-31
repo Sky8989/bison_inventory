@@ -38,7 +38,7 @@ public class InventoryByModelNumberHandler {
 
 
 
-    @ApiOperation(value = "通过 userId 查询 businessUnitId")
+    @ApiOperation(value = "查询 modelNumber库存汇总信息")
     @PostMapping(value = "/findModelNumberInventoryList")
     public ResultBean findModelNumberInventoryList(@RequestBody InventoryDTO inventoryDTO){
 //        ResultBean resultBean = new ResultBean();
