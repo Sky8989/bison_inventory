@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- *
- *
  * @author Lee
  * @date 2019-5-06
  */
@@ -36,10 +34,9 @@ public class BusinessUnitHandler {
     SalePlanMapperEx salePlanMapperEx;
 
 
-
     @ApiOperation(value = "通过 userId 查询 businessUnitId")
     @GetMapping(value = "/findByUserId/{userId}")
-    public ResultBean findByUserId(@PathVariable("userId") int userId){
+    public ResultBean findByUserId(@PathVariable("userId") int userId) {
 //        ResultBean resultBean = new ResultBean();
         System.out.printf("userId = " + userId);
         ResultBean resultBean = businessUnitService.findByUserId(userId);

@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 /**
- *
- *
  * @author Lee
  * @date 2019-5-24
  */
@@ -36,10 +34,9 @@ public class InventoryBySkuHandler {
     SalePlanMapperEx salePlanMapperEx;
 
 
-
     @ApiOperation(value = "查询所有SKU")
     @GetMapping(value = "/findSellSkuList")
-    public ResultBean findSellSkuList(){
+    public ResultBean findSellSkuList() {
 //        ResultBean resultBean = new ResultBean();
         ResultBean resultBean = inventoryBySkuService.findSellSkuList();
         return resultBean;
@@ -47,7 +44,7 @@ public class InventoryBySkuHandler {
 
     @ApiOperation(value = "通过 productId 查询指定产品下的 SKU")
     @GetMapping(value = "/findSellerSkuListByProductId/{productId}")
-    public ResultBean findSellerSkuListByProductId(@PathVariable int productId ){
+    public ResultBean findSellerSkuListByProductId(@PathVariable int productId) {
         System.out.println("productId = " + productId);
         ResultBean resultBean = inventoryBySkuService.findSellerSkuListByProductId(productId);
         return resultBean;
@@ -56,9 +53,9 @@ public class InventoryBySkuHandler {
 
     @ApiOperation(value = " 查询 SKU库存汇总")
     @PostMapping(value = "/findSkuInventoryList")
-    public ResultBean findSkuInventoryList(@RequestBody InventoryDTO inventoryDTO){
+    public ResultBean findSkuInventoryList(@RequestBody InventoryDTO inventoryDTO) {
 //        ResultBean resultBean = new ResultBean();
-        System.out.printf("inventoryDTO" + inventoryDTO );
+        System.out.printf("inventoryDTO" + inventoryDTO);
         ResultBean resultBean = inventoryBySkuService.findSkuInventoryList(inventoryDTO);
         return resultBean;
     }

@@ -45,7 +45,8 @@ public class ItemKeyServiceImpl implements ItemKeyService {
         ResultBean resultBean = new ResultBean();
 
         List<ItemKey> itemKeyList = itemKeyMapperEx.findByBusinessUnitIdAndStatus(businessUnitId,1);
-        return null;
+        resultBean.setData(itemKeyList);
+        return resultBean;
     }
 
     @Override

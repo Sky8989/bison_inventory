@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- *
- *
  * @author Lee
  * @date 2019-5-06
  */
@@ -38,10 +36,9 @@ public class BrandHandler {
     SalePlanMapperEx salePlanMapperEx;
 
 
-
     @ApiOperation(value = "获取所有卖家")
     @GetMapping(value = "/findBrandList")
-    public ResultBean findBrandList(){
+    public ResultBean findBrandList() {
         ResultBean resultBean = brandService.findBrandList();
         return resultBean;
     }

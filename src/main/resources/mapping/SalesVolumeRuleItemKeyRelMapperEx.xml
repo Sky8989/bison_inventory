@@ -13,7 +13,7 @@
         item_key_id as itemKeyId,
         item_key_ratio as itemKeyRatio
         FROM
-         bison_amz_product_inventory.sales_volume_rule_item_key_rel
+        `bison_amz_product_inventory`.`amz_sales_volume_rule_item_key_rel`
         where
             sales_volume_rule_id = #{salesVolumeRuleId}
 
@@ -27,7 +27,7 @@
             item_key_id as itemKeyId,
             item_key_ratio as itemKeyRatio
         FROM
-        bison_amz_product_inventory.sales_volume_rule_item_key_rel
+       `bison_amz_product_inventory`.`amz_sales_volume_rule_item_key_rel`
         where
             sales_volume_rule_id = #{salesVolumeRuleId}
             and item_key_id = #{itemKeyId}
@@ -43,7 +43,7 @@
         item_key_id as itemKeyId,
         item_key_ratio as itemKeyRatio
         FROM
-        bison_amz_product_inventory.sales_volume_rule_item_key_rel
+       `bison_amz_product_inventory`.`amz_sales_volume_rule_item_key_rel`
         where
             item_key_id = #{itemKeyId}
     </select>

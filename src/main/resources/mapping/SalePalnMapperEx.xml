@@ -14,7 +14,7 @@
             plan_date	as planDate,
             status
         FROM
-            bison_amz_product_inventory.sale_plan
+            `bison_amz_product_inventory`.`amz_sale_plan`
     </select>
 
     <select id="findItemTableHead" resultType="com.leaderment.pojo.ItemKey">
@@ -35,8 +35,8 @@
         SELECT
             count(1)
         FROM
-            bison_amz_product_inventory.sale_plan_item  spi,
-            bison_amz_product_inventory.sale_plan sp
+            `bison_amz_product_inventory`.`amz_sale_plan_item`  spi,
+            `bison_amz_product_inventory`.`amz_sale_plan` sp
         where
             spi.sale_plan_id = sp.sale_plan_id
             and sp.sale_plan_id = #{salePlanId}
@@ -48,7 +48,7 @@
         SELECT
             sum(units_ordered)
         FROM
-            bison_reports.amz_report_conversion_rate
+            bison_report.amz_report_conversion_rate
         where
         asin_id = #{asinId}
         and country_id = #{countryId}
@@ -63,7 +63,7 @@
         SELECT
             count(1)
         FROM
-            bison_amz_product_inventory.sale_plan
+            `bison_amz_product_inventory`.`amz_sale_plan`
         WHERE
         user_id  = #{userId}
         AND plan_date like  concat('',#{time},'%')
@@ -75,7 +75,7 @@
         u.user_id as userId,
         u.user_name as userName
     FROM
-        bison_amz_product_inventory.sale_plan sp,
+        `bison_amz_product_inventory`.`amz_sale_plan` sp,
         bison.user u
     where
         sp.user_id = u.user_id
@@ -99,14 +99,14 @@
             plan_date	as planDate,
             status
         FROM
-            bison_amz_product_inventory.sale_plan
+            `bison_amz_product_inventory`.`amz_sale_plan`
         where
             user_id = #{userId}
 
     </select>
 
     <insert id="save" keyProperty="salePlanId" useGeneratedKeys="true" parameterType="com.leaderment.pojo.SalePlan">
-        insert into bison_amz_product_inventory.sale_plan
+        insert into `bison_amz_product_inventory`.`amz_sale_plan`
         (user_id,plan_date,status)
         values (#{userId},#{planDate},#{status})
     </insert>
@@ -118,7 +118,7 @@
         plan_date	as planDate,
         status
     FROM
-        bison_amz_product_inventory.sale_plan
+        `bison_amz_product_inventory`.`amz_sale_plan`
     where
         sale_plan_id = #{salePlanId}
  </select>
@@ -162,9 +162,9 @@
             ik.last_day_val             as lastDayVal
 
         FROM
-            bison_amz_product_inventory.sale_plan_item spi,
-            bison_amz_product_inventory.item_key ik,
-            bison_amz_product_inventory.item_val iv
+            `bison_amz_product_inventory`.`amz_sale_plan_item` spi,
+            `bison_amz_product_inventory`.`amz_sale_paln_item_key` ik,
+            `bison_amz_product_inventory`.`amz_sale_paln_item_val` iv
         WHERE
             spi.sale_plan_item_id = iv.sale_plan_item_id
             AND iv.item_key_id = ik.item_key_id

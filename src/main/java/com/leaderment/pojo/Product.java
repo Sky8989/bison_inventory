@@ -90,6 +90,16 @@ public class Product {
      */
     private Integer samllItemKeyId;
 
+    /**
+     * 运营备注
+     */
+    private String purchaseRemark;
+
+    /**
+     * 销售备注
+     */
+    private String salesRemark;
+
 
     @Id
     @Column(name = "product_id", nullable = false)
@@ -411,6 +421,22 @@ public class Product {
         this.samllItemKeyId = samllItemKeyId;
     }
 
+    public String getpurchaseRemark() {
+        return purchaseRemark;
+    }
+
+    public void setpurchaseRemark(String purchaseRemark) {
+        this.purchaseRemark = purchaseRemark;
+    }
+
+    public String getSalesRemark() {
+        return salesRemark;
+    }
+
+    public void setSalesRemark(String saleRemark) {
+        this.salesRemark = saleRemark;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -447,12 +473,14 @@ public class Product {
                 Objects.equals(bigItemKeyId, product.bigItemKeyId) &&
                 Objects.equals(samllLastUnitsAvgDay, product.samllLastUnitsAvgDay) &&
                 Objects.equals(samllEstUnitsAvgDayRatio, product.samllEstUnitsAvgDayRatio) &&
-                Objects.equals(samllItemKeyId, product.samllItemKeyId);
+                Objects.equals(samllItemKeyId, product.samllItemKeyId) &&
+                Objects.equals(purchaseRemark, product.purchaseRemark) &&
+                Objects.equals(salesRemark, product.salesRemark);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, productModelNumber, businessUnitId, brandId, productCategoryId, productLong, productWidth, productHeight, productVolume, productNetweight, productGrossweight, productMaterial, productPackageContains, productOrderDefect, productU8Code, status, productCertification, productDescriptionChs, productDescriptionEn, userId, cTime, productImgUrl, totalSafetyDay, amzSafetyDay, estUnitsAvgDayRatio, lastUnitsAvgDayRatio, bigLastUnitsAvgDay, bigEstUnitisAvgDayRatio, bigItemKeyId, samllLastUnitsAvgDay, samllEstUnitsAvgDayRatio, samllItemKeyId);
+        return Objects.hash(productId, productModelNumber, businessUnitId, brandId, productCategoryId, productLong, productWidth, productHeight, productVolume, productNetweight, productGrossweight, productMaterial, productPackageContains, productOrderDefect, productU8Code, status, productCertification, productDescriptionChs, productDescriptionEn, userId, cTime, productImgUrl, totalSafetyDay, amzSafetyDay, estUnitsAvgDayRatio, lastUnitsAvgDayRatio, bigLastUnitsAvgDay, bigEstUnitisAvgDayRatio, bigItemKeyId, samllLastUnitsAvgDay, samllEstUnitsAvgDayRatio, samllItemKeyId, purchaseRemark, salesRemark);
     }
 
     @Override
@@ -490,6 +518,8 @@ public class Product {
                 ", samllLastUnitsAvgDay=" + samllLastUnitsAvgDay +
                 ", samllEstUnitsAvgDayRatio=" + samllEstUnitsAvgDayRatio +
                 ", samllItemKeyId=" + samllItemKeyId +
+                ", purchaseRemark='" + purchaseRemark + '\'' +
+                ", salesRemark='" + salesRemark + '\'' +
                 '}';
     }
 }

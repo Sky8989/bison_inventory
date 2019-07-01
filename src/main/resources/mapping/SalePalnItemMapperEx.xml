@@ -7,7 +7,7 @@
 <mapper namespace="com.leaderment.mapper.mybatis.SalePlanItemMapperEx">
 
     <select id="findNumBySalePlanId"  resultType="java.lang.Integer">
-      SELECT count(1) from bison_amz_product_inventory.sale_plan_item where sale_plan_id = #{salePlanId}
+      SELECT count(1) from `bison_amz_product_inventory`.`amz_sale_plan_item` where sale_plan_id = #{salePlanId}
     </select>
 
 
@@ -24,7 +24,7 @@
                 spi.est_units_promotion as estUnitsPromotion
 
             FROM
-                bison_amz_product_inventory.sale_plan_item spi
+                `bison_amz_product_inventory`.`amz_sale_plan_item` spi
             where
                 spi.sale_plan_item_id = #{salePlanItemId}
    </select>
@@ -41,9 +41,9 @@
            sp_item.status,
            est_units_promotion       as estUnitsPromotion
         from
-           bison_amz_product_inventory.sale_plan_item sp_item
+           `bison_amz_product_inventory`.`amz_sale_plan_item` sp_item
            left join
-                  bison_amz_product_inventory.sale_plan sp
+                  `bison_amz_product_inventory`.`amz_sale_plan` sp
            on
              sp_item.sale_plan_id = sp.sale_plan_id
         where
@@ -66,6 +66,7 @@
             and product_id = #{productId}
         group by
             asin_id
+        limit 1
     </select>
 
     <select id="findLastMonthSalePlanItemVO" resultType="com.leaderment.pojo.vo.SalePlanItemVO">
@@ -76,9 +77,9 @@
            sp_item.user_id           as userId,
            est_units_promotion       as estUnitsPromotion
         from
-           bison_amz_product_inventory.sale_plan_item sp_item
+           `bison_amz_product_inventory`.`amz_sale_plan_item` sp_item
            left join
-                  bison_amz_product_inventory.sale_plan sp
+                  `bison_amz_product_inventory`.`amz_sale_plan` sp
            on
              sp_item.sale_plan_id = sp.sale_plan_id
         where

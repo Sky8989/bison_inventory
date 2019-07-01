@@ -5,7 +5,7 @@
 　　sqlSession.insert(Student.class.getName()+".addStudent");
 -->
 <mapper namespace="com.leaderment.mapper.mybatis.InventoryMapperEx">
-    
+
     <select id="findStorageNumByProductId" resultType="java.lang.Integer">
     SELECT
         sum(FLOOR(r1.i_quantity) + FLOOR(r8.i_quantity))
@@ -33,7 +33,7 @@
 
     </select>
 
-    <select id="findAfnFulfillableQuantityByAsinId" resultType="java.lang.Integer">
+    <select id="findAfnFulfillableQuantityByAsinIdAndCountryId" resultType="java.lang.Integer">
      SELECT
         SUM(inv.afn_fulfillable_quantity)
      FROM
@@ -45,9 +45,12 @@
         bison_amz_product_inventory.amz_inventory inv ON t1.snapshot_time = inv.snapshot_time
     WHERE
         inv.asin_id = #{asinId}
+        <if test="countryId != 0">
+            and inv.country_id = #{countryId}
+        </if>
     </select>
 
-    <select id="findAfnUnsellableQuantityByAsinId" resultType="java.lang.Integer">
+    <select id="findAfnUnsellableQuantityByAsinIdAndCountryId" resultType="java.lang.Integer">
      SELECT
             SUM(inv.afn_unsellable_quantity)
          FROM
@@ -59,24 +62,39 @@
             bison_amz_product_inventory.amz_inventory inv ON t1.snapshot_time = inv.snapshot_time
         WHERE
             inv.asin_id = #{asinId}
+        <if test="countryId != 0">
+            and inv.country_id = #{countryId}
+        </if>
 
     </select>
 
 
-    <select id="findShippedNumberByAsinId" resultType="java.lang.Integer">
+    <select id="findShippedNumberByAsinIdAndCountryId" resultType="java.lang.Integer">
         SELECT
-            sum(item.quantity_shipped - item.quantity_received) as shipped
+            SUM(item.quantity_shipped) - SUM(item.quantity_received)
         FROM
             bison_amz_product_inventory.amz_shipment aship,
-            bison_amz_product_inventory.amz_shipment_item  item,
-            bison_amz_product_inventory.amz_seller_sku sku
-
-        where
+            bison_amz_product_inventory.amz_shipment_item item
+        WHERE
             aship.shipment_id = item.shipment_id
-            and item.seller_sku = sku.sku
-            and (aship.status_id = 2 or aship.status_id = 6)
-            and sku.asin_id = #{asinid}
-        group by sku.asin_id
+            AND (aship.status_id = 2 OR aship.status_id = 6)
+            AND item.seller_sku IN
+                (SELECT
+                    sku.sku
+                FROM
+                    bison_amz_product_inventory.amz_seller_sku sku
+                        LEFT JOIN
+                    bison_amz_product_inventory.amz_seller_asin asin ON asin.seller_id = sku.seller_id
+                        AND asin.asin_id = sku.asin_id
+                        AND asin.seller_id = sku.seller_id
+                        AND asin.status = 1
+                        AND sku.yFlag = 1
+                        AND asin.asin_id = #{asinId}
+                        <if test="countryId != 0">
+                            AND asin.country_id = #{countryId}
+                        </if>
+                GROUP BY seller_sku_id)
+
     </select>
 
     <select id="findSupplierStorageNumByProductId" resultType="java.lang.Integer">
@@ -116,79 +134,84 @@
 
 
     <!--按产品类型汇总-->
-    <select id="findModelNumberInventoryList" parameterType="com.leaderment.pojo.dto.InventoryDTO"  resultType="com.leaderment.pojo.vo.InventoryVO">
+    <select id="findModelNumberInventoryList" parameterType="com.leaderment.pojo.dto.InventoryDTO"
+            resultType="com.leaderment.pojo.vo.InventoryVO">
         select
-            p.product_id					as productId,
-            p.product_model_number			as productModelNumber,
-            p.total_safety_day				as totalSafetyDay,
-            p.amz_safety_day				as amzSafetyDay,
-            p.est_units_avg_day_ratio		as estUnitsAvgDayRatio,
-            p.last_units_avg_day_ratio   	as lastUnitsAvgDayRatio,
-            p.big_last_units_avg_day 		as bigLastUnitsAvgDay,
-            p.big_est_unitis_avg_day_ratio  as bigEstUnitisAvgDayRatio,
-            p.big_item_key_id				as bigItemKeyId,
-            p.samll_last_units_avg_day		as samllLastUnitsAvgDay,
+            p.product_id as productId,
+            p.product_model_number as productModelNumber,
+            p.total_safety_day as totalSafetyDay,
+            p.amz_safety_day as amzSafetyDay,
+            p.est_units_avg_day_ratio as estUnitsAvgDayRatio,
+            p.last_units_avg_day_ratio as lastUnitsAvgDayRatio,
+            p.big_last_units_avg_day as bigLastUnitsAvgDay,
+            p.big_est_unitis_avg_day_ratio as bigEstUnitisAvgDayRatio,
+            p.big_item_key_id as bigItemKeyId,
+            p.samll_last_units_avg_day as samllLastUnitsAvgDay,
             p.samll_est_units_avg_day_ratio as samllEstUnitsAvgDayRatio,
-            p.samll_item_key_id				as samllItemKeyId,
-            pc.product_category				as productCategory
-
-
-
+            p.samll_item_key_id as samllItemKeyId,
+            p.sales_remark as salesRemark,
+            p.purchase_remark as purchaseRemark,
+            pc.product_category as productCategory
         from
-            bison.product p left join
+            bison.product p
+        left join
             bison.product_category pc
-            on p.product_category_id = pc.product_category_id
-        left join (
-                    select
-                           sp_item.product_id
-                    from
-                           bison_amz_product_inventory.sale_plan_item sp_item
-                    left join
-                            bison_amz_product_inventory.sale_plan sp
-                    on
-                            sp_item.sale_plan_id = sp.sale_plan_id
-                    where
-                            sp.plan_date like concat('',#{localMonth},'%')
-                    group by
-                            sp_item.product_id
-                           ) t1
+        on
+            p.product_category_id = pc.product_category_id
+        left join
+            (select
+            sp_item.product_id
+            from
+            `bison_amz_product_inventory`.`amz_sale_plan_item` sp_item
+            left join
+            `bison_amz_product_inventory`.`amz_sale_plan` sp
             on
-                p.product_id = t1.product_id
+            sp_item.sale_plan_id = sp.sale_plan_id
             where
-                1 = 1
-            <if test="businessUnitId != 0">
-                and p.business_unit_id = #{businessUnitId}
-            </if>
-            <if test="productCategoryId != 0">
-                and p.product_category_id = #{productCategoryId}
-            </if>
-            <if test="productId != 0">
-                and p.product_id = #{productId}
-            </if>
+            sp.plan_date like concat('',#{localMonth},'%')
+            group by
+            sp_item.product_id
+            ) t1
+        on
+            p.product_id = t1.product_id
+        where
+            1 = 1
+        <if test="businessUnitId != 0">
+            and p.business_unit_id = #{businessUnitId}
+        </if>
+        <if test="productCategoryId != 0">
+            and p.product_category_id = #{productCategoryId}
+        </if>
+        <if test="productId != 0">
+            and p.product_id = #{productId}
+        </if>
 
     </select>
 
 
-
-    <select id="findSellerInventoryList" parameterType="com.leaderment.pojo.dto.InventoryDTO"  resultType="com.leaderment.pojo.vo.InventoryVO">
-         select
-            b.brand_name       			    as brandName,
-            t1.country			            as countryId,
-            c.country_name			        as countryName,
-            t1.user_id			            as userId,
-            p.product_id					as productId,
-            p.product_model_number			as productModelNumber,
-            p.total_safety_day				as totalSafetyDay,
-            p.amz_safety_day				as amzSafetyDay,
-            p.est_units_avg_day_ratio		as estUnitsAvgDayRatio,
-            p.last_units_avg_day_ratio   	as lastUnitsAvgDayRatio,
-            p.big_last_units_avg_day 		as bigLastUnitsAvgDay,
-            p.big_est_unitis_avg_day_ratio  as bigEstUnitisAvgDayRatio,
-            p.big_item_key_id				as bigItemKeyId,
-            p.samll_last_units_avg_day		as samllLastUnitsAvgDay,
+    <select id="findSellerInventoryList" parameterType="com.leaderment.pojo.dto.InventoryDTO"
+            resultType="com.leaderment.pojo.vo.InventoryVO">
+        select
+            b.brand_id as brandId,
+            b.brand_name as brandName,
+            t1.country as countryId,
+            c.country_name as countryName,
+            t1.user_id as userId,
+            p.product_id as productId,
+            p.product_model_number as productModelNumber,
+            p.total_safety_day as totalSafetyDay,
+            p.amz_safety_day as amzSafetyDay,
+            p.est_units_avg_day_ratio as estUnitsAvgDayRatio,
+            p.last_units_avg_day_ratio as lastUnitsAvgDayRatio,
+            p.big_last_units_avg_day as bigLastUnitsAvgDay,
+            p.big_est_unitis_avg_day_ratio as bigEstUnitisAvgDayRatio,
+            p.big_item_key_id as bigItemKeyId,
+            p.samll_last_units_avg_day as samllLastUnitsAvgDay,
             p.samll_est_units_avg_day_ratio as samllEstUnitsAvgDayRatio,
-            p.samll_item_key_id				as samllItemKeyId,
-            pc.product_category				as productCategory
+            p.samll_item_key_id as samllItemKeyId,
+            p.sales_remark as salesRemark,
+            p.purchase_remark as purchaseRemark,
+            pc.product_category as productCategory
 
         from
             bison.product p
@@ -196,30 +219,24 @@
             bison.product_category pc
         on
             p.product_category_id = pc.product_category_id
+        left join
+            (select
+            sp_item.product_id,
+            sp_item.user_id,
+            sp_item.country
 
-	    left join
-	        (select
-				   sp_item.product_id,
-				   sp_item.user_id,
-				   sp_item.country
+            from
+            `bison_amz_product_inventory`.`amz_sale_plan_item` sp_item
+            left join
+            `bison_amz_product_inventory`.`amz_sale_plan` sp
+            on
+            sp_item.sale_plan_id = sp.sale_plan_id
 
-				from
-					bison_amz_product_inventory.sale_plan_item sp_item
-				left join
-					bison_amz_product_inventory.sale_plan sp
-				on
-					sp_item.sale_plan_id = sp.sale_plan_id
-				left join
-					bison_amz_product_inventory.user_product_amz_asin_rel rel
-					on sp_item.product_id = rel.product_id
-					and sp_item.user_id = rel.user_charge_id
-				where
-					sp.plan_date like concat('',#{localMonth},'%')
-				group by
-						sp_item.product_id,
-						sp_item.country,
-						sp_item.user_id
-						) t1
+            where
+            sp.plan_date like concat('',#{localMonth},'%')
+            group by
+                sp_item.sale_plan_item_id
+            ) t1
         on
             p.product_id = t1.product_id
         left join
@@ -232,21 +249,21 @@
             t1.country = c.country_id
         where
             1 = 1
-           <if test="brandId != 0">
-               and t2.brand_id = #{brandId}
-           </if>
-            <if test="businessUnitId != 0">
-                and p.business_unit_id = #{businessUnitId}
-            </if>
-            <if test="countryId != 0">
-                and c.country_id = #{countryId}
-            </if>
-            <if test="productCategoryId != 0">
-                and p.product_category_id = #{productCategoryId}
-            </if>
-            <if test="productId != 0">
-                and p.product_id = #{productId}
-            </if>
+        <if test="brandId != 0">
+            and b.brand_id = #{brandId}
+        </if>
+        <if test="businessUnitId != 0">
+            and p.business_unit_id = #{businessUnitId}
+        </if>
+        <if test="countryId != 0">
+            and c.country_id = #{countryId}
+        </if>
+        <if test="productCategoryId != 0">
+            and p.product_category_id = #{productCategoryId}
+        </if>
+        <if test="productId != 0">
+            and p.product_id = #{productId}
+        </if>
 
     </select>
 
@@ -308,10 +325,253 @@
             group by p.product_id
     </select>
 
-    <select id="findSkuInventoryList" parameterType="com.leaderment.pojo.dto.InventoryDTO"  resultType="com.leaderment.pojo.vo.InventoryVO">
+    <select id="findSkuInventoryList" parameterType="com.leaderment.pojo.dto.InventoryDTO"
+            resultType="com.leaderment.pojo.vo.InventoryVO">
+        select
+        b.brand_name as brandName,
+        t1.country as countryId,
+        t1.seller_sku_id as sellerSkuId,
+        sku.sku,
+        sku.yFlag,
+        c.country_name as countryName,
+        t1.user_id as userId,
+        p.product_id as productId,
+        p.product_model_number as productModelNumber,
+        p.total_safety_day as totalSafetyDay,
+        p.amz_safety_day as amzSafetyDay,
+        p.est_units_avg_day_ratio as estUnitsAvgDayRatio,
+        p.last_units_avg_day_ratio as lastUnitsAvgDayRatio,
+        p.big_last_units_avg_day as bigLastUnitsAvgDay,
+        p.big_est_unitis_avg_day_ratio as bigEstUnitisAvgDayRatio,
+        p.big_item_key_id as bigItemKeyId,
+        p.samll_last_units_avg_day as samllLastUnitsAvgDay,
+        p.samll_est_units_avg_day_ratio as samllEstUnitsAvgDayRatio,
+        p.samll_item_key_id as samllItemKeyId,
+        p.sales_remark as salesRemark,
+        p.purchase_remark as purchaseRemark,
+        pc.product_category as productCategory
 
+        from
+        bison.product p
+        left join
+        bison.product_category pc
+        on
+        p.product_category_id = pc.product_category_id
+
+        left join
+        (
+        select
+            sp_item.product_id,
+            sp_item.user_id,
+            sp_item.country,
+            rel.seller_sku_id
+        from
+            `bison_amz_product_inventory`.`amz_sale_plan_item` sp_item
+        left join
+            `bison_amz_product_inventory`.`amz_sale_plan` sp
+        on
+            sp_item.sale_plan_id = sp.sale_plan_id
+        left join
+            bison_amz_product_inventory.user_product_amz_asin_rel rel
+        on
+            sp_item.product_id = rel.product_id
+            and sp_item.user_id = rel.user_charge_id
+        where
+            sp.plan_date like concat('',#{localMonth},'%')
+        group by
+            sp_item.sale_plan_item_id,
+            rel.seller_sku_id) t1
+        on
+            p.product_id = t1.product_id
+        left join
+            bison.brand b
+        on
+            p.brand_id = b.brand_id
+        left join
+            bison.country c
+        on
+            t1.country = c.country_id
+        left join
+            bison_amz_product_inventory.amz_seller_sku sku
+        on t1.seller_sku_id = sku.seller_sku_id
+        where
+        1 = 1
+        <if test="brandId != 0">
+            and b.brand_id = #{brandId}
+        </if>
+        <if test="businessUnitId != 0">
+            and p.business_unit_id = #{businessUnitId}
+        </if>
+        <if test="countryId != 0">
+            and c.country_id = #{countryId}
+        </if>
+        <if test="productCategoryId != 0">
+            and p.product_category_id = #{productCategoryId}
+        </if>
+        <if test="productId != 0">
+            and p.product_id = #{productId}
+        </if>
+        <if test="sellerSkuId != 0">
+            and sku.seller_sku_id = #{sellerSkuId}
+        </if>
+        order by p.product_id
+    </select>
+
+    <select id="findAfnFulfillableQuantityBySellerSkuId" resultType="java.lang.Integer">
+        SELECT
+            SUM(inv.afn_fulfillable_quantity)
+        FROM
+            (SELECT
+            MAX(snapshot_time) AS snapshot_time
+            FROM
+                bison_amz_product_inventory.amz_inventory) t1
+        LEFT JOIN
+            bison_amz_product_inventory.amz_inventory inv
+        ON
+            t1.snapshot_time = inv.snapshot_time
+        WHERE
+            inv.seller_sku_id = #{sellerSkuId}
 
     </select>
+
+    <select id="findAfnUnsellableQuantityBySellerSkuId" resultType="java.lang.Integer">
+         SELECT
+            SUM(inv.afn_unsellable_quantity)
+         FROM
+            (SELECT
+                MAX(snapshot_time) AS snapshot_time
+            FROM
+                bison_amz_product_inventory.amz_inventory) t1
+        LEFT JOIN
+            bison_amz_product_inventory.amz_inventory inv ON t1.snapshot_time = inv.snapshot_time
+        WHERE
+            inv.seller_sku_id = #{sellerSkuId}
+    </select>
+
+    <select id="findShippedNumberByASku" resultType="java.lang.Integer">
+        SELECT
+            sum(item.quantity_shipped - item.quantity_received) as shipped
+        FROM
+            bison_amz_product_inventory.amz_shipment aship,
+            bison_amz_product_inventory.amz_shipment_item  item
+
+        where
+            aship.shipment_id = item.shipment_id
+            and (aship.status_id = 2 or aship.status_id = 6)
+            and item.seller_sku = #{sku}
+        group by item.seller_sku
+    </select>
+
+
+    <select id="getOperationsTotalQuanTity" resultType="java.lang.Integer">
+        SELECT
+            SUM(pod.i_quantity)
+        FROM
+            bison.product p
+            LEFT JOIN
+            U8.ven_and_inv vai ON p.product_u8_code = vai.c_inv_code
+        LEFT JOIN
+            U8.po_pomain po ON vai.c_ven_code = po.c_ven_code
+        LEFT JOIN
+            U8.po_podetails pod ON po.po_id = pod.po_id
+        where
+            p.product_id = #{productId}
+        GROUP BY
+            p.product_id
+    </select>
+
+    <select id="getOperationsIntoInventoryTotalQuanTity" resultType="java.lang.Integer">
+        SELECT
+          SUM(r1.i_quantity)
+        FROM
+            bison.product p
+        LEFT JOIN
+            U8.ven_and_inv vai ON p.product_u8_code = vai.c_inv_code
+        LEFT JOIN
+            U8.po_pomain po ON vai.c_ven_code = po.c_ven_code
+        LEFT JOIN
+            U8.rdrecords01 r1 ON po.c_po_id = r1.c_po_id
+        where
+            p.product_id = #{productId}
+        GROUP BY p.product_id
+    </select>
+
+    <select id="getSupplierName" resultType="java.lang.String">
+        SELECT
+            s.c_ven_name
+        FROM
+            U8.supplier s
+        WHERE
+            s.c_ven_code =
+            (SELECT
+                inv.c_ven_code
+            FROM
+                bison.product p
+                    LEFT JOIN
+                U8.ven_and_inv inv ON p.product_u8_code = inv.c_inv_code
+            WHERE
+                p.product_id = #{productId}
+            LIMIT 1)
+    </select>
+
+    <select id="getITaxUnitPrice" resultType="java.lang.Integer">
+        SELECT
+        vip.iTaxUnitPrice
+        FROM
+        (SELECT
+            inv.c_ven_code,
+            inv.c_inv_code
+        FROM
+            bison.product p
+                LEFT JOIN
+            U8.ven_and_inv inv ON p.product_u8_code = inv.c_inv_code
+        WHERE
+            p.product_id = #{productId}
+        LIMIT 1)  t1
+        left join
+         U8.Ven_Inv_Price vip
+        on
+         t1.c_ven_code = vip.cVenCode
+        and  t1.c_inv_code = vip.cInvCode LIMIT 1
+    </select>
+
+    <select id="ffindShippedNumberByAsinIdAndProductIdAndCountryIdAndUserId" resultType="java.lang.Integer">
+        SELECT
+        sum(item.quantity_shipped) - sum(item.quantity_received)
+        FROM
+        bison_amz_product_inventory.amz_shipment aship,
+        bison_amz_product_inventory.amz_shipment_item item
+        WHERE
+        aship.shipment_id = item.shipment_id
+        AND (aship.status_id = 2 OR aship.status_id = 6)
+        AND item.seller_sku IN
+        (
+        SELECT sku.sku FROM
+        bison_amz_product_inventory.amz_seller_sku sku
+        left join
+        bison_amz_product_inventory.user_product_amz_asin_rel rel
+        on
+        sku.seller_sku_id = rel.seller_sku_id
+        where
+        rel.asin_id = #{asinId}
+
+        <if test=" productId != 0 ">
+            and rel.product_id = #{productId}
+        </if>
+
+        <if test=" countryId != 0 ">
+            and rel.country_id = #{countryId}
+        </if>
+
+        <if test=" userId != 0 ">
+            and rel.user_charge_id = #{userId}
+        </if>
+        group by sku.seller_sku_id
+        )
+
+    </select>
+
+
 
 
 </mapper>

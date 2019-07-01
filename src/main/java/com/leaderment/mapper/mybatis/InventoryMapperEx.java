@@ -3,6 +3,7 @@ package com.leaderment.mapper.mybatis;
 
 import com.leaderment.pojo.dto.InventoryDTO;
 import com.leaderment.pojo.vo.InventoryVO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,10 +18,10 @@ public interface InventoryMapperEx {
     Integer findStorageNumOutByProductId(int productId);
 
     //amz 可卖
-    Integer findAfnFulfillableQuantityByAsinId(int asinId);
+    Integer findAfnFulfillableQuantityByAsinIdAndCountryId(@Param("asinId") int asinId,@Param("countryId") int countryId);
 
     //在途
-    Integer findShippedNumberByAsinId(int asinId);
+    Integer findShippedNumberByAsinIdAndCountryId(@Param("asinId") int asinId,@Param("countryId") int countryId);
 
 
     //供应商 入库
@@ -42,7 +43,7 @@ public interface InventoryMapperEx {
      * @param asinId
      * @return
      */
-    Integer findAfnUnsellableQuantityByAsinId(int asinId);
+    Integer findAfnUnsellableQuantityByAsinIdAndCountryId(@Param("asinId") int asinId,@Param("countryId") int countryId);
 
     /**
      * 按 账号汇总 库存数量
@@ -85,4 +86,70 @@ public interface InventoryMapperEx {
      * @return
      */
     List<InventoryVO> findSkuInventoryList(InventoryDTO inventoryDTO);
+
+    /**
+     * 通过  sellerSkuId 查询可售
+     * @param
+     * @param sellerSkuId
+     * @return
+     */
+    Integer findAfnFulfillableQuantityBySellerSkuId( @Param("sellerSkuId") int sellerSkuId);
+
+    /**
+     * 通过 sellerSkuId 不可售
+     * @param
+     * @param sellerSkuId
+     * @return
+     */
+    Integer findAfnUnsellableQuantityBySellerSkuId(@Param("sellerSkuId")int sellerSkuId);
+
+    /**
+     * 通过 sku 计算在途
+     * @param sku
+     * @return
+     */
+    Integer findShippedNumberByASku(String sku);
+
+    /**
+     * 当前产品的 采购订单总数量
+     * @param productId
+     * @return
+     */
+    Integer getOperationsTotalQuanTity(int productId);
+
+    /**
+     * 当前产品采购入库的总数量
+     * @param productId
+     * @return
+     */
+    Integer getOperationsIntoInventoryTotalQuanTity(int productId);
+
+
+    /**
+     * 获取供应商名称
+     * @param productId
+     * @return
+     */
+    String getSupplierName(int productId);
+
+    /**
+     * 获取 含税单价
+     * @param productId
+     * @return
+     */
+    Integer getITaxUnitPrice(int productId);
+
+
+    /**
+     * 通过 asinId 国家id  productId 查询 amz在途
+     * @param productId
+     * @param asinId
+     * @param countryId
+     * @return
+     */
+
+    Integer ffindShippedNumberByAsinIdAndProductIdAndCountryIdAndUserId(@Param("asinId")Integer asinId,
+                                                                        @Param("productId") int productId,
+                                                                        @Param("countryId")int countryId,
+                                                                        @Param("userId")int userId);
 }

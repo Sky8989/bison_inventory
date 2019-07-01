@@ -1,16 +1,16 @@
 server:
-  port: 10023
+  port: 10024
 spring:
   application:
-    name: sales-plan #指定服务名
+    name: inventory #指定服务名
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/bison?useSSL=false&zeroDateTimeBehavior=convertToNull&characterEncoding=utf8
+   # url: jdbc:mysql://192.168.1.55:3306/bison?useSSL=false&zeroDateTimeBehavior=convertToNull&characterEncoding=utf8
    # url: jdbc:mysql://lmdevnts0001.leaderment.com:3306/bison?useSSL=false&zeroDateTimeBehavior=convertToNull&characterEncoding=utf8
-  #  username: root
-    username: admin
-   # password: Ldm_1910%
-    password: root
+    url: jdbc:mysql://192.168.1.221:3306/bison?useSSL=false&zeroDateTimeBehavior=convertToNull&characterEncoding=utf8
+    username: root
+    #password: root
+    password: Ldm_1910%
   jpa:
     database: MySQL
     show-sql: true
@@ -29,11 +29,12 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://192.168.1.220:10020/eureka/
+      defaultZone: http://192.168.1.221:10020/eureka/
   instance:
     prefer-ip-address: true
-    instance-id:  sales-plan
+    instance-id:  inventory
     appname: ${spring.application.name}
+    status-page-url: http://192.168.1.221:${server.port}/swagger-ui.html
 
 mybatis:
   type-aliases-package: com.leaderment.product.pojo.mybatis_pojo

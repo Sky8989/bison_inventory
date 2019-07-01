@@ -21,7 +21,7 @@ public interface SalePlanMapperEx {
 
     List<ItemValVO> findItemValBySalePlanItemId(int salePlanItemId);
 
-    Integer getlastUnitsOrderedSum(@Param("lastDayVal") int lastDayVal, @Param("asinId")int asinId,  @Param("countryId")int countryId);
+    Integer getlastUnitsOrderedSum(@Param("asinId")int asinId,@Param("countryId")int countryId,@Param("lastDayVal") int lastDayVal);
 
     List<ItemValVO> findItemValByUserId(int userId);
 

@@ -48,10 +48,7 @@ public class InventoryBySellerServiceImpl implements InventoryBySellerService {
             return resultBean;
         }
 
-
         List<InventoryVO> inventoryList =  getInventoryVOList(inventoryDTO);
-
-
         inventoryList = inventoryByModelNumberServiceImpl.forEachInventoryVO(inventoryList);
 
 

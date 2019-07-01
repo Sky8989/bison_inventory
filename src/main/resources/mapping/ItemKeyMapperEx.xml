@@ -12,7 +12,7 @@
         SELECT
             COUNT(1)
         FROM
-            bison_amz_product_inventory.item_key
+            `bison_amz_product_inventory`.`amz_sale_paln_item_key`
         WHERE
             item_key = #{itemKey}
             AND type = #{type}
@@ -29,7 +29,7 @@
             status,
             last_day_val        as lastDayVal
         FROM
-            bison_amz_product_inventory.item_key
+            `bison_amz_product_inventory`.`amz_sale_paln_item_key`
         WHERE
             business_unit_id = #{businessUnitId}
     </select>
@@ -45,7 +45,7 @@
                 ik.type,
                 ik.`status`
             FROM
-                bison_amz_product_inventory.item_key ik,
+                `bison_amz_product_inventory`.`amz_sale_paln_item_key` ik,
                 bison.user u
             where
                  ik.business_unit_id = u.business_unit_id
@@ -64,7 +64,7 @@
             last_day_val as lastDayVal,
             business_unit_id    as businessUnitId
         FROM
-            bison_amz_product_inventory.item_key ik
+            `bison_amz_product_inventory`.`amz_sale_paln_item_key` ik
         WHERE
             ik.status = #{status}
             AND ik.business_unit_id = #{businessUnitId}
@@ -81,7 +81,7 @@
             `status`,
             last_day_val as lastDayVal
         FROM
-            bison_amz_product_inventory.item_key
+            `bison_amz_product_inventory`.`amz_sale_paln_item_key`
         WHERE
             item_key_id = #{itemKeyId}
 
@@ -90,13 +90,14 @@
     <select id="findByProductIdAndType" resultType="com.leaderment.pojo.ItemKey">
      SELECT
             ik.item_key_id 	as itemKeyId,
-           ik.item_key	    as itemKey,
+            ik.item_key	    as itemKey,
             ik.type,
             ik.`status`,
             ik.last_day_val as lastDayVal
 
+
         FROM
-            bison_amz_product_inventory.item_key ik
+            `bison_amz_product_inventory`.`amz_sale_paln_item_key` ik
         where
          ik.business_unit_id = (select business_unit_id from  bison.product where  product_id = #{productId} limit 1)
             and ik.type = #{type}
@@ -111,7 +112,7 @@
             `status`,
             last_day_val as lastDayVal
         FROM
-            bison_amz_product_inventory.item_key
+            `bison_amz_product_inventory`.`amz_sale_paln_item_key`
         WHERE
             business_unit_id = (select business_unit_id from  bison.product where  product_id = #{productId} limit 1)
             AND status = #{status}
@@ -126,7 +127,7 @@
         `status`,
         last_day_val as lastDayVal
     FROM
-        bison_amz_product_inventory.item_key
+        `bison_amz_product_inventory`.`amz_sale_paln_item_key`
     where
     business_unit_id = (SELECT business_unit_id FROM bison.user where user_id = #{userId})
     and type = #{type}

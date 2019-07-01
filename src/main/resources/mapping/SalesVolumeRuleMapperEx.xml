@@ -15,13 +15,13 @@
             svr.min_sales_volume as minSalesVolume,
             svr.max_sales_volume as maxSalesVolume
         FROM
-            bison_amz_product_inventory.sales_volume_rule svr,
+            `bison_amz_product_inventory`.`amz_sales_volume_rule_item_key_rel` svr,
             (select
             sales_volume_rule_id,
             item_key_id,
             item_key_ratio
             from
-            bison_amz_product_inventory.sales_volume_rule_item_key_rel
+           `bison_amz_product_inventory`.`amz_sales_volume_rule_item_key_rel`
             where item_key_id = #{itemKeyId})  t1
         where
             svr.sales_volume_rule_id in (t1.sales_volume_rule_id)
@@ -33,12 +33,12 @@
             item_key_id	        as itemKeyId,
             rationality
         FROM
-            bison_amz_product_inventory.sales_volume_rule
+            `bison_amz_product_inventory`.`amz_sales_volume_rule_item_key_rel`
         where
             item_key_id = #{itemKeyId}
 
         <if test="lastUnitsOrderSum == 0">
-            and (min_sales_volume <![CDATA[<=]]>  #{lastUnitsOrderSum}  )
+            and (min_sales_volume <![CDATA[<=]]>  #{lastUnitsOrderSum})
         </if>
 
         <if test="lastUnitsOrderSum != 0">
@@ -55,12 +55,12 @@
         item_key_id	        as itemKeyId,
         rationality
         FROM
-        bison_amz_product_inventory.sales_volume_rule
+        `bison_amz_product_inventory`.`amz_sales_volume_rule_item_key_rel`
         where
          1 = 1
 
         <if test="lastUnitsOrderSum == 0">
-            and (min_sales_volume <![CDATA[<=]]>  #{lastUnitsOrderSum}  )
+            and (min_sales_volume <![CDATA[<=]]>  #{lastUnitsOrderSum})
         </if>
 
         <if test="lastUnitsOrderSum != 0">
@@ -82,7 +82,7 @@
             svr.max_sales_volume		as maxSalesVolume,
             svr.rationality
         FROM
-            bison_amz_product_inventory.sales_volume_rule svr
+            `bison_amz_product_inventory`.`amz_sales_volume_rule_item_key_rel` svr
         where
             svr.item_key_id = #{itemKeyId}
 
@@ -100,7 +100,7 @@
             svr.max_sales_volume		as maxSalesVolume,
             svr.rationality
         FROM
-            bison_amz_product_inventory.sales_volume_rule svr
+            `bison_amz_product_inventory`.`amz_sales_volume_rule_item_key_rel` svr
         where
             svr.sales_volume_rule_id = #{salesVolumeRuleId}
     </select>

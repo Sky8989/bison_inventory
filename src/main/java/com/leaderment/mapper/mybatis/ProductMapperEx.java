@@ -2,6 +2,7 @@ package com.leaderment.mapper.mybatis;
 
 
 import com.leaderment.pojo.Product;
+import com.leaderment.pojo.dto.AddRemarkDTO;
 import com.leaderment.pojo.vo.ProductInventroyVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,4 +24,12 @@ public interface ProductMapperEx {
     List<Product> findModelNumberByproductCategoryIdAndBusinessUnitId(@Param("productCategoryId") int productCategoryId, @Param("businessUnitId") int businessUnitId);
 
     List<Product> findModelNumberByBrandId(int brandId);
+
+    int updateSaleRemarkByProductId(AddRemarkDTO addRemarkDTO);
+
+    int updatePurchaseRemarkByProductId(AddRemarkDTO addRemarkDTO);
+
+    String getSalesRemarkByProductId(int productId);
+
+    String getPurchaseRemarkByProductId(int productId);
 }

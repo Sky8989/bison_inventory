@@ -100,6 +100,41 @@
 
     </select>
 
+    <update id="updateSaleRemarkByProductId" parameterType="com.leaderment.pojo.dto.AddRemarkDTO">
+        update
+        bison.product
+        set
+            sales_remark = #{salesRemark}
+        where
+        product_id = #{productId}
+    </update>
+
+    <update id="updatePurchaseRemarkByProductId"   parameterType="com.leaderment.pojo.dto.AddRemarkDTO">
+         update
+        bison.product
+        set
+            purchase_remark = #{purchaseRemark}
+        where
+        product_id = #{productId}
+    </update>
+
+    <select id="getSalesRemarkByProductId" resultType="java.lang.String">
+        select
+            sales_remark
+        from
+            bison.product
+         where
+            product_id = #{productId}
+    </select>
+    <select id="getPurchaseRemarkByProductId" resultType="java.lang.String">
+        select
+            purchase_remark
+        from
+            bison.product
+         where
+            product_id = #{productId}
+    </select>
+
 
 
 </mapper>

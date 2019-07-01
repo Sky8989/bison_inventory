@@ -17,7 +17,7 @@ public class SupplierInventoryVO {
     /**
      * 采购含税单价
      */
-    private int taxUnitPrice;
+    private int iTaxUnitPrice;
     /**
      * 可发数量
      */
@@ -26,13 +26,81 @@ public class SupplierInventoryVO {
     /**
      * 未清数量
      */
-    private int Quantity;
+    private int unclearedQuantity;
 
     /**
-     * 供应商总库存
+     * 供应商总库存 = 可发数量 + 未清数量
      */
     private int supplierInventoryTotalQuantity;
 
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public int getMinimumCartonQuantity() {
+        return minimumCartonQuantity;
+    }
+
+    public void setMinimumCartonQuantity(int minimumCartonQuantity) {
+        this.minimumCartonQuantity = minimumCartonQuantity;
+    }
+
+    public int getiTaxUnitPrice() {
+        return iTaxUnitPrice;
+    }
+
+    public void setiTaxUnitPrice(int iTaxUnitPrice) {
+        this.iTaxUnitPrice = iTaxUnitPrice;
+    }
+
+    public int getFulfillableQuantity() {
+        return fulfillableQuantity;
+    }
+
+    public void setFulfillableQuantity(int fulfillableQuantity) {
+        this.fulfillableQuantity = fulfillableQuantity;
+    }
+
+    public int getUnclearedQuantity() {
+        return unclearedQuantity;
+    }
+
+    public void setUnclearedQuantity(int unclearedQuantity) {
+        this.unclearedQuantity = unclearedQuantity;
+    }
+
+    public int getSupplierInventoryTotalQuantity() {
+        return supplierInventoryTotalQuantity;
+    }
+
+    public void setSupplierInventoryTotalQuantity(int supplierInventoryTotalQuantity) {
+        this.supplierInventoryTotalQuantity = supplierInventoryTotalQuantity;
+    }
 
 
+    @Override
+    public String toString() {
+        return "SupplierInventoryVO{" +
+                "productId=" + productId +
+                ", supplierName='" + supplierName + '\'' +
+                ", minimumCartonQuantity=" + minimumCartonQuantity +
+                ", iTaxUnitPrice=" + iTaxUnitPrice +
+                ", fulfillableQuantity=" + fulfillableQuantity +
+                ", unclearedQuantity=" + unclearedQuantity +
+                ", supplierInventoryTotalQuantity=" + supplierInventoryTotalQuantity +
+                '}';
+    }
 }
+

@@ -24,13 +24,15 @@ public class InventoryVO {
 
     private int userId;
 
-    private String  productCategory;
+    private String productCategory;
 
 
     //账号汇总 需要添加的信息
 
     private int sellerId;
     private String brandName;
+    private int brandId;
+
     private int countryId;
     private String countryName;
 
@@ -105,15 +107,14 @@ public class InventoryVO {
 
     //备注相关
     /**
+     * 运营备注
+     */
+    private String purchaseRemark;
+
+    /**
      * 销售备注
      */
     private String salesRemark;
-
-    /**
-     * 运营备注
-     */
-    private String operationsRemark;
-
 
 
     //库存设置提醒相关
@@ -121,7 +122,7 @@ public class InventoryVO {
     /**
      * 库存设置提醒 大于方向 历史日均
      */
-    private int  bigLastUnitsAvgDay;
+    private int bigLastUnitsAvgDay;
 
     /**
      * 库存设置提醒 大于方向 预测日均比率
@@ -135,7 +136,7 @@ public class InventoryVO {
 
 
     /**
-     *库存设置提醒 小于方向 对应 历史日均天数
+     * 库存设置提醒 小于方向 对应 历史日均天数
      */
     private int samllLastUnitsAvgDay;
 
@@ -150,9 +151,6 @@ public class InventoryVO {
     private int samllItemKeyId;
 
 
-
-
-
     /**
      * 设置一 的提醒
      */
@@ -163,7 +161,6 @@ public class InventoryVO {
      * 设置二 的提醒
      */
     private boolean blueRemind = false;
-
 
 
     /**
@@ -183,6 +180,13 @@ public class InventoryVO {
      */
     private LocalInventoryVO localInventoryVO;
 
+
+    /**
+     * 供应商 相关数据视图
+     */
+    private SupplierInventoryVO supplierInventoryVO;
+
+
     /**
      * 产品对应的 预测自定义列
      */
@@ -192,6 +196,19 @@ public class InventoryVO {
      */
     List<ItemKey> lastItemKeyList;
 
+
+
+
+
+
+
+    public SupplierInventoryVO getSupplierInventoryVO() {
+        return supplierInventoryVO;
+    }
+
+    public void setSupplierInventoryVO(SupplierInventoryVO supplierInventoryVO) {
+        this.supplierInventoryVO = supplierInventoryVO;
+    }
 
     public int getyFlag() {
         return yFlag;
@@ -385,20 +402,20 @@ public class InventoryVO {
         this.replenishmentQuantity = replenishmentQuantity;
     }
 
+    public String getPurchaseRemark() {
+        return purchaseRemark;
+    }
+
+    public void setPurchaseRemark(String purchaseRemark) {
+        this.purchaseRemark = purchaseRemark;
+    }
+
     public String getSalesRemark() {
         return salesRemark;
     }
 
-    public void setSalesRemark(String salesRemark) {
-        this.salesRemark = salesRemark;
-    }
-
-    public String getOperationsRemark() {
-        return operationsRemark;
-    }
-
-    public void setOperationsRemark(String operationsRemark) {
-        this.operationsRemark = operationsRemark;
+    public void setSalesRemark(String saleRemark) {
+        this.salesRemark = saleRemark;
     }
 
     public BigDecimal getLastUnitsAvgDayRatio() {
@@ -489,6 +506,15 @@ public class InventoryVO {
         this.countryName = countryName;
     }
 
+
+    public int getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(int brandId) {
+        this.brandId = brandId;
+    }
+
     @Override
     public String toString() {
         return "InventoryVO{" +
@@ -498,6 +524,7 @@ public class InventoryVO {
                 ", productCategory='" + productCategory + '\'' +
                 ", sellerId=" + sellerId +
                 ", brandName='" + brandName + '\'' +
+                ", brandId=" + brandId +
                 ", countryId=" + countryId +
                 ", countryName='" + countryName + '\'' +
                 ", sellerSkuId=" + sellerSkuId +
@@ -514,8 +541,8 @@ public class InventoryVO {
                 ", totalInventoryDay=" + totalInventoryDay +
                 ", replenishmentDay=" + replenishmentDay +
                 ", replenishmentQuantity=" + replenishmentQuantity +
+                ", purchaseRemark='" + purchaseRemark + '\'' +
                 ", salesRemark='" + salesRemark + '\'' +
-                ", operationsRemark='" + operationsRemark + '\'' +
                 ", bigLastUnitsAvgDay=" + bigLastUnitsAvgDay +
                 ", bigEstUnitisAvgDayRatio=" + bigEstUnitisAvgDayRatio +
                 ", bigItemKeyId=" + bigItemKeyId +
@@ -527,6 +554,7 @@ public class InventoryVO {
                 ", amzSafetyDay=" + amzSafetyDay +
                 ", amzInventoryVO=" + amzInventoryVO +
                 ", localInventoryVO=" + localInventoryVO +
+                ", supplierInventoryVO=" + supplierInventoryVO +
                 ", estItemKeyList=" + estItemKeyList +
                 ", lastItemKeyList=" + lastItemKeyList +
                 '}';
